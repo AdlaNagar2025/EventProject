@@ -1,0 +1,126 @@
+.imagediv {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 15px;
+  border: 2px dashed #d4af37; /* מסגרת מקווקוות נותנת תחושה של "Drag & Drop" */
+  text-align: center;
+  margin-top: 30px;
+  transition: all 0.3s ease;
+}
+
+.imagediv h3 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 22px;
+}
+
+.imagediv p {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* עיצוב כפתור בחירת הקבצים הדיפולטיבי */
+.imagediv input[type="file"] {
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 20px;
+}
+
+/* קונטיינר לתמונות המקדימות */
+.previewContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid #fff;
+  transition: transform 0.2s ease;
+}
+
+.imageWrapper:hover {
+  transform: scale(1.05);
+}
+
+.imageWrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* מבטיח שהתמונה תמלא את הריבוע בלי להתעוות */
+}
+
+/* כפתור העלאה */
+.uploadBtn {
+  background-color: #d4af37;
+  color: #2c3e50;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.uploadBtn:hover:not(:disabled) {
+  background-color: #f1c40f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+}
+
+.uploadBtn:disabled {
+  background-color: #ecf0f1;
+  color: #bdc3c7;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.previewContainer {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.imageWrapper {
+  position: relative; /* מאפשר ל-X להיות ממוקם ביחס לתמונה */
+  width: 100px;
+  height: 100px;
+}
+
+.previewImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* גורם לתמונה להיחתך יפה לריבוע */
+  border-radius: 8px;
+}
+
+.removeBtn {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
