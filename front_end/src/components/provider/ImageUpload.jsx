@@ -9,7 +9,10 @@ import axios from "axios";
 export default function ImageUpload({ user }) {
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [existingImages, setExistingImages] = useState([]); // תמונות שכבר קיימות ב-DB
+  const [existingImages, setExistingImages] = useState([]); 
+
+  const MAX_IMAGES = 5; 
+  const totalImages = images.length + existingImages.length; 
 
 
 
@@ -37,7 +40,7 @@ export default function ImageUpload({ user }) {
   const handleChangeImage = (e) => {
     const selectedFiles = Array.from(e.target.files);
 
-    if (images.length + selectedFiles.length > 5) {
+    if (images.length + selectedFiles.length + existingImages.length > 5) {
       alert("You can only upload up to 5 images in total.");
       return;
     }
@@ -54,6 +57,7 @@ export default function ImageUpload({ user }) {
     });
 
     setImages((prev) => [...prev, ...validFiles]);
+
   };
 
   /**
@@ -84,6 +88,8 @@ export default function ImageUpload({ user }) {
         // ניקוי הכתובות מהזיכרון לפני ריקון הסטייט
         images.forEach(img => URL.revokeObjectURL(URL.createObjectURL(img)));
         setImages([]);
+            fetchAllImages();
+
       }
     } catch (error) {
       const msg = error.response?.data?.message || "Server Error";
@@ -121,54 +127,51 @@ const removeImageFromDB = async (indexToRemove, pathToRemove) => {
 };
 
 
-
-
+        
   return (
     <div className={classes.imagediv}>
-      <h3>Business Gallery</h3>
-      {/* תצוגת תמונות קיימות מהשרת */}
-    <div className={classes.previewContainer}>
-      {existingImages.map((img, index) => (
-        <div key={`existing-${index}`} className={classes.imageWrapper}>
-          <img
-            src={`http://localhost:3030/uploads/${img.image_path}`} // נתיב מלא לתיקיית ה-uploads בשרת
-            alt="existing"
-            className={classes.previewImg}
-          />
-          {/* כאן אפשר להוסיף כפתור מחיקה מה-DB בעתיד */}
-          <button
-              type="button"
-              className={classes.removeBtn}
-              onClick={() => removeImageFromDB(index,img.image_path)}
-            >
-              ×
-            </button>
+      <div className={classes.header}>
+        <h3>Business Gallery</h3>
+        {/* הצגת המונה למשתמש */}
+        <span className={totalImages >= MAX_IMAGES ? classes.limitReached : classes.counter}>
+          {totalImages} / {MAX_IMAGES} Images
+        </span>
+      </div>
+
+      <p>You can upload up to {MAX_IMAGES} high-quality images.</p>
+      
+      <div className={classes.previewContainer}>
+        {/* תמונות מה-DB */}
+        {existingImages.map((img, index) => (
+          <div key={`existing-${index}`} className={classes.imageWrapper}>
+            <img src={`http://localhost:3030/uploads/${img.image_path}`} alt="existing" className={classes.previewImg} />
+            <button type="button" className={classes.removeBtn} onClick={() => removeImageFromDB(index, img.image_path)}>×</button>
+          </div>
+        ))}
         </div>
-      ))}
-    </div>
-      <p>Upload up to 5 high-quality images of your service or venue.</p>
+
+      {/* חסימת ה-Input אם הגענו למקסימום */}
       <input
         type="file"
         multiple
-        accept="image/*" // מגביל את הבחירה רק לקבצי תמונה
+        accept="image/*"
         onChange={handleChangeImage}
-        disabled={uploading || images.length >= 5}
+        disabled={uploading || totalImages >= MAX_IMAGES}
+        className={classes.fileInput}
       />
+
+      {totalImages >= MAX_IMAGES && (
+        <p className={classes.warningText}>You have reached the maximum limit of images.</p>
+      )}
+
       <div className={classes.previewContainer}>
+      
+
+        {/* תצוגה מקדימה לחדשות */}
         {images.map((file, index) => (
-          <div key={index} className={classes.imageWrapper}>
-            <img
-              src={URL.createObjectURL(file)}
-              alt={`preview ${index}`}
-              className={classes.previewImg}
-            />
-            <button
-              type="button"
-              className={classes.removeBtn}
-              onClick={() => removeImage(index)}
-            >
-              ×
-            </button>
+          <div key={`new-${index}`} className={classes.imageWrapper}>
+            <img src={URL.createObjectURL(file)} alt="preview" className={classes.previewImg} style={{ border: "2px solid #28a745" }} />
+            <button type="button" className={classes.removeBtn} onClick={() => removeImage(index)}>×</button>
           </div>
         ))}
       </div>
@@ -178,7 +181,7 @@ const removeImageFromDB = async (indexToRemove, pathToRemove) => {
         disabled={uploading || images.length === 0}
         className={classes.uploadBtn}
       >
-        {uploading ? "Uploading..." : "Upload Gallery"}
+        {uploading ? "Uploading..." : "Save New Images"}
       </button>
     </div>
   );
