@@ -53,6 +53,19 @@ export default function Calendar({ user }) {
         setEvents(formattedEvents);
       }
     } catch (error) {
+      if (error.response) {
+    console.error("Server Error Data:", error.response.data); // כאן תראי את ה-Message מהמידלוור
+    console.error("Status Code:", error.response.status);
+  } 
+  // אם לא הייתה תשובה מהשרת בכלל (רשת כבויה)
+  else if (error.request) {
+    console.error("No response from server. Is the backend running?");
+  } 
+  // שגיאה אחרת (למשל טעות בקוד בתוך ה-try)
+  else {
+    console.error("Error setting up request:", error.message);
+  }
+  setEvents([]);
       console.error("Error fetching calendar:", error);
       setEvents([]);
     }

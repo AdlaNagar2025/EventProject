@@ -21,12 +21,17 @@ export default function ImageUpload({ user }) {
       return;
     }
     const validFiles = selectedFiles.filter((file) => {
+      if (!file.type.startsWith("image/")) {
+        alert(`${file.name} is not a valid image file.`);
+        return false;
+      }
       if (file.size > 2 * 1024 * 1024) {
         alert(`File ${file.name} is too large. Max size is 2MB.`);
         return false;
       }
       return true;
     });
+
     setImages((prev) => [...prev, ...validFiles]);
   };
 
@@ -54,20 +59,24 @@ export default function ImageUpload({ user }) {
         },
       );
       if (response.data.success) {
-        alert(response.data.message);
+        alert("Success! " + response.data.message);
+        // ניקוי הכתובות מהזיכרון לפני ריקון הסטייט
+        images.forEach(img => URL.revokeObjectURL(URL.createObjectURL(img)));
         setImages([]);
       }
     } catch (error) {
-      console.error("Upload error:", error);
-      alert("Upload failed. Please try again.");
+      const msg = error.response?.data?.message || "Server Error";
+      alert("Upload failed: " + msg);
     } finally {
       setUploading(false);
     }
   };
 
+ 
   const removeImage = (indexToRemove) => {
-    setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
-  };
+  URL.revokeObjectURL(URL.createObjectURL(images[indexToRemove]));
+  setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
+};
 
   return (
     <div className={classes.imagediv}>

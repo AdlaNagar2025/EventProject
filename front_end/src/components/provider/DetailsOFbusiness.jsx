@@ -3,12 +3,15 @@ import BusinessAccount from "./BusinessAccount";
 import ImageUpload from "./ImageUpload";
 import Calendar from "./Calendar";
 import classes from "./DetailsOFbusiness.module.css";
+import axios from "axios";
 
 function DetailsOFbusiness({ user }) {
   console.log(user)
-async function handleStatusChange(id, provider_type, newStatus) {
+async function handleStatusChange() {
     try {
-      const tableName = user= "Chief" ? "chiefs" : "halls";
+      const tableName = user.role= "Chief" ? "chiefs" : "halls";
+      const id=user.id
+      const newStatus="PENDING"
       const response = await axios.post(
         "http://localhost:3030/admin/approve-business",
         { type: tableName, id, newStatus },
@@ -18,7 +21,6 @@ async function handleStatusChange(id, provider_type, newStatus) {
       //  //TGEEER STATUS IN TABLE DISABLE
       // }
       alert(response.data.message);
-      setProviders((prev) => prev.filter((p) => p.id !== id));
     } catch (error) {
       console.error("Error fetching users:", error);
     }

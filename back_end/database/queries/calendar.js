@@ -53,7 +53,6 @@ try {
 }
 
 async function getCalandar(providerId) {
-  if (!providerId) return { success: false, message: "no id" };
   const sql = `SELECT * FROM availability WHERE provider_id=?`;
   const result = await doQuery(sql, [providerId]);
   return result;
