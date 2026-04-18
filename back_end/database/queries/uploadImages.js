@@ -1,4 +1,5 @@
 const doQuery = require("../query");
+
 /**
  * פונקציה השומרת את נתיבי התמונות שהועלו בבסיס הנתונים.
  * מקבלת את מזהה הספק, סוג הספק (שף/אולם) ומערך קבצים מ-Multer.
@@ -19,7 +20,7 @@ async function uploadImagesToDB(providerId, provider_type, files) {
       index === 0 ? 1 : 0, // התמונה הראשונה במערך תקבל 1 (ראשית)
     ]);
 
-    const sql = `INSERT INTO provider_images (provider_id,provider_type,image_path,is_main) VALUES (?,?,?,?)`;
+    const sql = `INSERT INTO provider_images (provider_id,provider_type,image_path,is_main) VALUES ?`;
 
     await doQuery(sql, [values]);
 

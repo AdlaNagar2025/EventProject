@@ -1,4 +1,6 @@
 const express = require("express");
+const multer = require("multer");
+
 const router = express.Router();
 const { isProvider, isConnected, isActive } = require("../Middleware/auth");
 const createBusinessProfile = require("../database/queries/businessAccount");
@@ -44,30 +46,53 @@ router.post("/businessAccount", async (req, res) => {
  * @desc    העלאת עד 5 תמונות לגלריה ושמירת הנתיבים שלהן ב-DB.
  * @access  Private (Provider only)
  */
-router.post("/upload-gallery", upload.array("images", 5), async (req, res) => {
-  try {
-    const providerId = req.session.user.id;
-    const provider_type = req.session.user.role;
-    const files = req.files; // כאן נמצאים הקבצים ש-Multer עיבד
-    if (!files || files.length === 0) {
-      return res
-        .status(400)
-        .json({ success: false, message: "No files uploaded" });
+
+router.post("/upload-gallery", (req, res) => {
+  // 1. קריאה ידנית לפונקציית ההעלאה כדי שנוכל לתפוס שגיאות (כמו Size Limit)
+  upload.array("images", 5)(req, res, async (err) => {
+    // בדיקה אם קרתה שגיאה של Multer (למשל: קובץ גדול מדי או יותר מ-5 תמונות)
+    if (err instanceof multer.MulterError) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res.status(400).json({ success: false, message: "One or more files are too large (Max 2MB per image)." });
+      }
+      return res.status(400).json({ success: false, message: `Upload error: ${err.message}` });
+    } 
+    // בדיקה אם קרתה שגיאה אחרת (למשל: סוג קובץ לא תקין מה-fileFilter)
+    else if (err) {
+      return res.status(400).json({ success: false, message: err.message });
     }
-    // שמירה ב-Database
-    await uploadImagesToDB(providerId, provider_type, files);
-    res.json({
-      success: true,
-      message: "Gallery uploaded and saved successfully!",
-      count: files.length,
-    });
-  } catch (error) {
-    console.error("Upload Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to save images to database",
-    });
-  }
+
+    // 2. אם הגענו לכאן - הקבצים עלו לשרת בהצלחה! עכשיו נשמור אותם ב-DB
+    try {
+      const providerId = req.session.user.id;
+      const provider_type = req.session.user.role;
+      const files = req.files; 
+
+      if (!files || files.length === 0) {
+        return res.status(400).json({ success: false, message: "No files selected." });
+      }
+
+      // שמירה ב-Database
+      const dbResult = await uploadImagesToDB(providerId, provider_type, files);
+      
+      if (dbResult.success) {
+        return res.json({
+          success: true,
+          message: "Gallery uploaded and saved successfully! ✨",
+          count: files.length,
+        });
+      } else {
+        return res.status(500).json(dbResult);
+      }
+
+    } catch (error) {
+      console.error("Critical Upload Error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to process images after upload.",
+      });
+    }
+  });
 });
 
 /**
