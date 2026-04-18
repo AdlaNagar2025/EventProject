@@ -1,14 +1,15 @@
 const express = require("express");
 const multer = require("multer");
+const fs = require('fs');
+const path = require('path');
 
 const router = express.Router();
 const { isProvider, isConnected, isActive } = require("../Middleware/auth");
 const createBusinessProfile = require("../database/queries/businessAccount");
 const upload = require("../Middleware/upload");
-const {uploadImagesToDB,getAllImages} = require("../database/queries/uploadImages");
+const {uploadImagesToDB,getAllImages , deleteImage} = require("../database/queries/uploadImages");
 const { fillCalendar, getCalandar } = require("../database/queries/calendar");
 const {getProfile} =require("../database/queries/adminFunc")
-
 /**
  * הגנה גלובלית על כל נתיבי ה-Provider:
  * כל נתיב שיוגדר מתחת לשורות אלו יחויב לעבור את שלושת הבדיקות בסדר הזה.
@@ -154,4 +155,36 @@ router.get("/MyImages" , async(req,res)=>{
   }
 });
 
+
+
+
+
+router.delete("/deleteImage/:imagePath", async (req, res) => {
+  const imagePath = req.params.imagePath;
+
+  if (!imagePath) {
+    return res.status(400).json({ success: false, message: "No image path provided" });
+  }
+
+  try {
+    const dbResult = await deleteImage(imagePath);
+
+    if (dbResult.affectedRows > 0) {
+      const fullPath = path.join(__dirname, '../uploads', imagePath); 
+      
+
+      if (fs.existsSync(fullPath)) {
+        fs.unlinkSync(fullPath); // מוחק פיזית מהכונן
+        console.log(`File ${imagePath} deleted from server disk.`);
+      }
+
+      return res.json({ success: true, message: "Image deleted from DB and disk" });
+    } else {
+      return res.status(404).json({ success: false, message: "Image not found in database" });
+    }
+  } catch (error) {
+    console.error("Error in delete process:", error);
+    res.status(500).json({ success: false, message: "Server error during deletion" });
+  }
+});
 module.exports = router;

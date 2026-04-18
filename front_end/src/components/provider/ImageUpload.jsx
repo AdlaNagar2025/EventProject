@@ -102,6 +102,27 @@ export default function ImageUpload({ user }) {
 
 
 
+
+const removeImageFromDB = async (indexToRemove, pathToRemove) => {
+  try {
+    const response = await axios.delete(
+      `http://localhost:3030/provider/deleteImage/${pathToRemove}`,
+      { withCredentials: true }
+    );
+    if (response.data.success) {
+      setExistingImages((prev) => prev.filter((_, index) => index !== indexToRemove));
+    } else {
+      alert("Failed to delete image from server.");
+    }
+  } catch (error) {
+    console.error("Error deleting image:", error);
+    alert("An error occurred while deleting the image.");
+  }
+};
+
+
+
+
   return (
     <div className={classes.imagediv}>
       <h3>Business Gallery</h3>
@@ -115,6 +136,13 @@ export default function ImageUpload({ user }) {
             className={classes.previewImg}
           />
           {/* כאן אפשר להוסיף כפתור מחיקה מה-DB בעתיד */}
+          <button
+              type="button"
+              className={classes.removeBtn}
+              onClick={() => removeImageFromDB(index,img.image_path)}
+            >
+              ×
+            </button>
         </div>
       ))}
     </div>
