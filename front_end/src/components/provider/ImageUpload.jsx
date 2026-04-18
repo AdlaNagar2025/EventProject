@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./ImageUpload.module.css";
 import axios from "axios";
 /**
@@ -9,6 +9,27 @@ import axios from "axios";
 export default function ImageUpload({ user }) {
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [existingImages, setExistingImages] = useState([]); // תמונות שכבר קיימות ב-DB
+
+
+
+  const fetchAllImages = async () => {
+    try {
+      const response = await axios.get("http://localhost:3030/provider/MyImages", {
+        withCredentials: true
+      });
+      if (response.data.success) {
+        // שמירת רשימת נתיבי התמונות מהשרת
+        setExistingImages(response.data.data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching images:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllImages();
+  }, []);
   /**
    * מטפל בשינוי בקלט הקבצים ומעדכן את ה-State.
    * כולל הגבלה ל-5 תמונות כפי שהוגדר ב-Backend.
@@ -78,9 +99,25 @@ export default function ImageUpload({ user }) {
   setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
 };
 
+
+
+
   return (
     <div className={classes.imagediv}>
       <h3>Business Gallery</h3>
+      {/* תצוגת תמונות קיימות מהשרת */}
+    <div className={classes.previewContainer}>
+      {existingImages.map((img, index) => (
+        <div key={`existing-${index}`} className={classes.imageWrapper}>
+          <img
+            src={`http://localhost:3030/uploads/${img.image_path}`} // נתיב מלא לתיקיית ה-uploads בשרת
+            alt="existing"
+            className={classes.previewImg}
+          />
+          {/* כאן אפשר להוסיף כפתור מחיקה מה-DB בעתיד */}
+        </div>
+      ))}
+    </div>
       <p>Upload up to 5 high-quality images of your service or venue.</p>
       <input
         type="file"

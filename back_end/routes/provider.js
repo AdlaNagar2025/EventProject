@@ -5,7 +5,7 @@ const router = express.Router();
 const { isProvider, isConnected, isActive } = require("../Middleware/auth");
 const createBusinessProfile = require("../database/queries/businessAccount");
 const upload = require("../Middleware/upload");
-const uploadImagesToDB = require("../database/queries/uploadImages");
+const {uploadImagesToDB,getAllImages} = require("../database/queries/uploadImages");
 const { fillCalendar, getCalandar } = require("../database/queries/calendar");
 const {getProfile} =require("../database/queries/adminFunc")
 
@@ -137,6 +137,16 @@ router.get("/MyProfile",async (req,res)=>{
     const providerId = req.session.user.id;
     console.log(providerId)
     const result = await getProfile(providerId)
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+router.get("/MyImages" , async(req,res)=>{
+   try {
+    const providerId = req.session.user.id;
+    const result = await getAllImages(providerId)
     res.json({ success: true, data: result });
   } catch (error) {
     console.error("Error fetching profile:", error);

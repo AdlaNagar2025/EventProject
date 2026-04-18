@@ -36,4 +36,11 @@ async function uploadImagesToDB(providerId, provider_type, files) {
     };
   }
 }
-module.exports = uploadImagesToDB;
+
+async function getAllImages(providerId ) {
+  const sql=`SELECT * FROM provider_images WHERE provider_id=?`
+  const result=await doQuery(sql,[providerId])
+  return result
+  
+}
+module.exports = {uploadImagesToDB,getAllImages};
