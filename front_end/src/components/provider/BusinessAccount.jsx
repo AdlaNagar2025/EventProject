@@ -15,7 +15,7 @@ const initialHall = {
   hall_name: "", city: "", street: "", price: "",
   phone: "", capacity: "", email: "", description: ""
 };
-export default function BusinessAccount({ user }) {
+export default function BusinessAccount({ user  }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [chiefData, setChiefData] = useState(initialChief);
   const [hallData, setHallData] = useState(initialHall);

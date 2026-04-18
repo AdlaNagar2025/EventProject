@@ -87,4 +87,20 @@ async function createBusinessProfile({ businessData, user }) {
 
 
 
-module.exports = createBusinessProfile;
+
+
+async function checkStatus(providerId, role) {
+  let sql = "";
+  if (role === "Chief") {
+    sql = `SELECT status FROM chiefs WHERE chief_id = ?`;
+  } else {
+    sql = `SELECT status FROM halls WHERE hall_id = ?`;
+  }
+
+  const result = await doQuery(sql, [providerId]);
+  return result[0]?.status; // מחזיר רק את הסטטוס עצמו (למשל "PENDING")
+}
+
+
+
+module.exports = {createBusinessProfile,checkStatus};

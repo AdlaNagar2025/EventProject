@@ -52,4 +52,5 @@ async function deleteImage(imagePath) {
   const sql = `DELETE FROM provider_images WHERE image_path = ?`;
   return await doQuery(sql, [imagePath]);
 }
+
 module.exports = {uploadImagesToDB,getAllImages , deleteImage};

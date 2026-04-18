@@ -56,3 +56,15 @@
   margin: 40px 0;
   border: none;
 }
+
+
+.disabledArea {
+    pointer-events: none; /* חוסם לחיצות על הכל */
+    opacity: 0.7; /* עושה את זה קצת שקוף */
+    filter: grayscale(0.5); /* עושה צבעים אפורים יותר */
+}
+
+.submitBtn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}

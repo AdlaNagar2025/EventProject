@@ -5,11 +5,13 @@ const path = require('path');
 
 const router = express.Router();
 const { isProvider, isConnected, isActive } = require("../Middleware/auth");
-const createBusinessProfile = require("../database/queries/businessAccount");
+const {createBusinessProfile ,checkStatus}= require("../database/queries/businessAccount");
 const upload = require("../Middleware/upload");
 const {uploadImagesToDB,getAllImages , deleteImage} = require("../database/queries/uploadImages");
 const { fillCalendar, getCalandar } = require("../database/queries/calendar");
 const {getProfile} =require("../database/queries/adminFunc")
+const { updateBusinessStatus} = require("../database/queries/adminFunc");
+
 /**
  * הגנה גלובלית על כל נתיבי ה-Provider:
  * כל נתיב שיוגדר מתחת לשורות אלו יחויב לעבור את שלושת הבדיקות בסדר הזה.
@@ -185,6 +187,35 @@ router.delete("/deleteImage/:imagePath", async (req, res) => {
   } catch (error) {
     console.error("Error in delete process:", error);
     res.status(500).json({ success: false, message: "Server error during deletion" });
+  }
+});
+
+router.get("/MyBusinessStatus", async (req, res) => {
+  try {
+    const { id, role } = req.session.user;
+    const status = await checkStatus(id, role);
+    res.json({ success: true, status: status });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error checking status" });
+  }
+});
+
+
+
+
+router.post("/approve-business", async (req, res) => {
+  console.log(req.body);
+  const { type, id, newStatus } = req.body;
+  if (!type || !id || !newStatus) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing required fields" });
+  }
+  try {
+    await updateBusinessStatus(type, id, newStatus);
+    res.json({ success: true, message: `Status updated to ${newStatus}` });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Update failed" });
   }
 });
 module.exports = router;

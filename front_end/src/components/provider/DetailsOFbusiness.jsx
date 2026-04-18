@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState , useEffect } from "react";
 import BusinessAccount from "./BusinessAccount";
 import ImageUpload from "./ImageUpload";
 import Calendar from "./Calendar";
@@ -6,14 +6,40 @@ import classes from "./DetailsOFbusiness.module.css";
 import axios from "axios";
 
 function DetailsOFbusiness({ user }) {
-  console.log(user)
+  const [isDisable, setIsDisable] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState("");
+
+  useEffect(() => {
+    const getStatus = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3030/provider/MyBusinessStatus",
+          { withCredentials: true }
+        );
+        
+        if (response.data.success) {
+          const status = response.data.status;
+          setCurrentStatus(status);
+          // אם הסטטוס הוא PENDING או APPROVED - ננעל את האפשרות לערוך/לשלוח שוב
+          if (status === "PENDING") {
+            setIsDisable(true);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch status");
+      }
+    };
+    getStatus();
+  }, []);
+
+console.log(user)
 async function handleStatusChange() {
     try {
-      const tableName = user.role= "Chief" ? "chiefs" : "halls";
+      const tableName = user.role=== "Chief" ? "chiefs" : "halls";
       const id=user.id
       const newStatus="PENDING"
       const response = await axios.post(
-        "http://localhost:3030/admin/approve-business",
+        "http://localhost:3030/provider/approve-business",
         { type: tableName, id, newStatus },
         { withCredentials: true },
       );
@@ -21,42 +47,45 @@ async function handleStatusChange() {
       //  //TGEEER STATUS IN TABLE DISABLE
       // }
       alert(response.data.message);
+      setIsDisable(true)
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   }
   return (
-    <div className={classes.mainContainer}>
+    <div className={`${classes.mainContainer} ${isDisable ? classes.disabledArea : ""}`}>
       <header className={classes.header}>
         <h1>Business Setup</h1>
-        <p>Follow the steps below to prepare your profile for customers</p>
-
+        <p>Status: <strong>{currentStatus || "NOT SUBMITTED"}</strong></p>
       </header>
 
-      {/* שלב 1: פרטי עסק */}
+      {/* העברת isDisable לקומפוננטות הילד כדי שגם הן יינעלו */}
       <section className={classes.stepCard}>
         <div className={classes.stepNumber}>1</div>
-        <BusinessAccount user={user} />
+        <BusinessAccount user={user} isDisable={isDisable} />
       </section>
 
       <div className={classes.divider} />
 
-      {/* שלב 2: גלריה */}
       <section className={classes.stepCard}>
         <div className={classes.stepNumber}>2</div>
-        <ImageUpload user={user} />
+        <ImageUpload user={user} isDisable={isDisable} />
       </section>
 
       <div className={classes.divider} />
 
-      {/* שלב 3: ניהול זמינות */}
       <section className={classes.stepCard}>
         <div className={classes.stepNumber}>3</div>
-        <Calendar user={user} />
+        <Calendar user={user} isDisable={isDisable} />
       </section>
 
-           <button onClick={handleStatusChange}>Submit To Admin </button>
-
+      <button 
+        onClick={handleStatusChange} 
+        disabled={isDisable} // תיקון: disabled ולא disable
+        className={classes.submitBtn}
+      >
+        {isDisable ? "Waiting for Approval..." : "Submit To Admin"}
+      </button>
     </div>
   );
 }
