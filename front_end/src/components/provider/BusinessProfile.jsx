@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useEffect } from 'react';
 import classes from "./BusinessProfile.module.css"; // בואי נוסיף עיצוב בהמשך
 import ImageUpload from './ImageUpload';
+import Calendar from './Calendar';
 
 
 export default function BusinessProfile({provider}) {
@@ -131,6 +132,7 @@ export default function BusinessProfile({provider}) {
         </div>
       )}
       <ImageUpload role="Admin" user={provider}/>
+       <Calendar role="Admin" user={provider}/>
 
     </div>
   );

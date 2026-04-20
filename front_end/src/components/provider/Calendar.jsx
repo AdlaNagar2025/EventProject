@@ -6,7 +6,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import axios from "axios";
 
-export default function Calendar({ user }) {
+export default function Calendar({ role , user }) {
   const [availableData, setAvailableData] = useState({
     available_date: "",
     start_time: "",
@@ -21,9 +21,16 @@ export default function Calendar({ user }) {
   // פונקציה למשיכת זמינות קיימת מהשרת
   const fetchAvailability = async () => {
     try {
+       let url
+      if (role === "Chief" || role === "Hall_Owner")
+        url="http://localhost:3030/provider/getMyCalendar"
+      else if (role === "Admin" )
+        url=`http://localhost:3030/admin/ProviderCalandar/${user.id}`
+      else if (role === "Customer" )
+        url=`http://localhost:3030/customer/ProviderCalandar/${user.id}`
+
       const response = await axios.get(
-        "http://localhost:3030/provider/getMyCalendar",
-        {
+url,        {
           withCredentials: true,
         },
       );
@@ -105,8 +112,10 @@ export default function Calendar({ user }) {
     }
     setLoading(true);
     try {
+     
       const response = await axios.post(
-        "http://localhost:3030/provider/fillCalendar",
+        "http://localhost:3030/provider/fillCalendar"
+,
         availableData,
         { withCredentials: true },
       );
@@ -131,7 +140,9 @@ export default function Calendar({ user }) {
   };
 
   return (
-    <div className={classes.calendarContainer}>
+    <>
+    {(role==="Chief" || role ==="Hall_Owner" ) && (
+      <div className={classes.calendarContainer}>
       <h2>Manage Your Availability</h2>
       <div className={classes.calendarWrapper}>
         <FullCalendar
@@ -179,5 +190,52 @@ export default function Calendar({ user }) {
         </div>
       )}
     </div>
+
+    )}
+    {role==="Admin" && (
+      <div className={classes.calendarWrapper}>
+        <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView="timeGridWeek"
+          editable={false}
+          events={events}
+          allDaySlot={false}
+          slotMinTime="08:00:00"
+          slotMaxTime="24:00:00"
+          height="auto"
+          headerToolbar={{
+            start: "prev,next today",
+            center: "title",
+            end: "dayGridMonth,timeGridWeek",
+          }}
+        />
+      </div>
+    )}
+
+      {role === "Customer"  && (
+      <div className={classes.calendarWrapper}>
+        <FullCalendar
+     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView="timeGridWeek"
+          selectable={true}
+          editable={false}
+          events={events}
+          select={handleSelect}
+          allDaySlot={false}
+          slotMinTime="08:00:00"
+          slotMaxTime="24:00:00"
+          height="auto"
+          headerToolbar={{
+            start: "prev,next today",
+            center: "title",
+            end: "dayGridMonth,timeGridWeek",
+          }}
+        />
+      </div>
+    )}
+    
+
+
+    </>
   );
 }

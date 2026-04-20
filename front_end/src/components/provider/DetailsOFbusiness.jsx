@@ -76,7 +76,7 @@ async function handleStatusChange() {
 
       <section className={classes.stepCard}>
         <div className={classes.stepNumber}>3</div>
-        <Calendar user={user} isDisable={isDisable} />
+        <Calendar role={user.role} user={user} isDisable={isDisable} />
       </section>
 
       <button 
