@@ -7,7 +7,7 @@ import ImageUpload from './ImageUpload';
 import Calendar from './Calendar';
 
 
-export default function BusinessProfile({provider}) {
+export default function BusinessProfile({user,provider}) {
   const [chiefData, setChiefData] = useState({
     specialty: "",
     price_per_hour: "",
@@ -131,8 +131,8 @@ export default function BusinessProfile({provider}) {
           </div>
         </div>
       )}
-      <ImageUpload role="Admin" user={provider}/>
-       <Calendar role="Admin" user={provider}/>
+      <ImageUpload role={user.role} user={provider}/>
+       <Calendar role={user.role} user={provider}/>
 
     </div>
   );

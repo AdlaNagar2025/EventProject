@@ -46,6 +46,18 @@ function isAdmin(req, res, next) {
 }
 
 /**
+ * Middleware שבודק אם המשתמש הוא משתמש (Customer).
+ */
+function isCustomer(req, res, next) {
+  if (req.session?.user?.role === "Customer") {
+    return next();
+  }
+  return res
+    .status(403)
+    .json({ success: false, message: "Access denied: Customer only" });
+}
+
+/**
  * Middleware שבודק אם חשבון המשתמש פעיל.
  * מונע ממשתמשים מושבתים (is_active = 0) לבצע פעולות.
  */
@@ -89,4 +101,4 @@ async function isApproved(req, res, next) {
   }
 }
 
-module.exports = { isProvider, isConnected, isAdmin, isActive, isApproved };
+module.exports = { isProvider, isConnected, isAdmin, isActive, isApproved , isCustomer };

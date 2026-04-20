@@ -77,7 +77,7 @@ return (
               element={<DetailsOFbusiness user={user} />}
             />
             <Route path="/usersmanagment" element={<UsersManagment />} />
-            <Route path="/servicesapprovals" element={<ServicesApprovals />} />
+            <Route path="/servicesapprovals" element={<ServicesApprovals user={user}  />} />
             <Route path="*" element={<h2>Page Not Found 404</h2>} />
           </Routes>
         </main>

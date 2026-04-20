@@ -25,9 +25,9 @@ export default function Calendar({ role , user }) {
       if (role === "Chief" || role === "Hall_Owner")
         url="http://localhost:3030/provider/getMyCalendar"
       else if (role === "Admin" )
-        url=`http://localhost:3030/admin/ProviderCalandar/${user.id}`
+        url=`http://localhost:3030/admin/ProviderCalendar/${user.id}`
       else if (role === "Customer" )
-        url=`http://localhost:3030/customer/ProviderCalandar/${user.id}`
+        url=`http://localhost:3030/customer/ProviderCalendar/${user.id}`
 
       const response = await axios.get(
 url,        {

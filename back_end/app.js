@@ -39,10 +39,12 @@ app.use(
 const userRoutes = require("./routes/user");
 const providerRoutes = require("./routes/provider");
 const adminRoutes=require("./routes/admin")
+const customerRoutes=require("./routes/customer")
 
 app.use("/user", userRoutes);
 app.use("/provider", providerRoutes);
 app.use("/admin",adminRoutes);
+app.use("/customer",customerRoutes);
 
 app.listen(port, () => {
   console.log(`The app is running in ${port}`);

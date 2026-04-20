@@ -8,6 +8,7 @@ export default function SideBar({ user }) {
       {user.role === "Customer" && (
         <div className={classes.sideBar}>
           <p>🔍Find a vendor</p>
+          {/* <Link to="/servicesapprovals">Services Approvals</Link> */}
           <p>My Booking</p>
           <p>❤️favorite</p>
           <Link to="/account">My Account</Link>
