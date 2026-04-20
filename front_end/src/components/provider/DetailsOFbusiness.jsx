@@ -69,7 +69,7 @@ async function handleStatusChange() {
 
       <section className={classes.stepCard}>
         <div className={classes.stepNumber}>2</div>
-        <ImageUpload user={user} isDisable={isDisable} />
+        <ImageUpload role={user.role} user={user} isDisable={isDisable} />
       </section>
 
       <div className={classes.divider} />

@@ -2,7 +2,9 @@ import React from 'react'
 import axios from 'axios'
 import { useState } from 'react'
 import { useEffect } from 'react';
-import classes from "./BusinessAccount.module.css"; // בואי נוסיף עיצוב בהמשך
+import classes from "./BusinessProfile.module.css"; // בואי נוסיף עיצוב בהמשך
+import ImageUpload from './ImageUpload';
+
 
 export default function BusinessProfile({provider}) {
   const [chiefData, setChiefData] = useState({
@@ -38,13 +40,13 @@ export default function BusinessProfile({provider}) {
         console.log(response.data.data);
         if (provider.provider_type === "Chief") {
           setChiefData({
-            specialty: data.specialty || "",
-            price_per_hour: data.price_per_hour || "",
-            experience_years: data.experience_years || "",
-            description: data.description || "",
-            capacity: data.capacity || "",
-            city: data.city || "",
-            street: data.street || "",
+            specialty: data.specialty ,
+            price_per_hour: data.price_per_hour ,
+            experience_years: data.experience_years,
+            description: data.description,
+            capacity: data.capacity ,
+            city: data.city ,
+            street: data.street ,
           });
         } else if (provider.provider_type === "Hall_Owner") {
           setHallData({
@@ -81,11 +83,21 @@ export default function BusinessProfile({provider}) {
             <label>Price per Hour:</label>
             <input type="number" value={chiefData.price_per_hour} readOnly />
 
-            <label>Experience:</label>
+            <label>Experience YEARS:</label>
             <input type="number" value={chiefData.experience_years} readOnly />
 
             <label>City:</label>
             <input type="text" value={chiefData.city} readOnly />
+
+
+               <label>Capacity</label>
+            <input type="number" value={chiefData.capacity} readOnly/>
+
+            <label>Phone:</label>
+            <input type="tel" value={chiefData.phone} readOnly/>
+
+            <label>Description:</label>
+            <input type='textare' value={chiefData.description} readOnly/>
           </div>
         </div>
       )}
@@ -105,9 +117,21 @@ export default function BusinessProfile({provider}) {
 
             <label>City:</label>
             <input type="text" value={hallData.city} readOnly />
+
+            <label>Capacity</label>
+            <input type="number" value={hallData.capacity} readOnly/>
+
+            <label>Phone:</label>
+            <input type="tel" value={hallData.phone} readOnly/>
+
+            <label>Description:</label>
+            <textare value={hallData.description} readOnly/>
+
           </div>
         </div>
       )}
+      <ImageUpload role="Admin" user={provider}/>
+
     </div>
   );
 }

@@ -89,7 +89,6 @@ export default function Calendar({ user }) {
     const startTime = start.toTimeString().substring(0, 5);
     const endTime = end.toTimeString().substring(0, 5);
     console.log(`${selectedDate} : ${startTime} : ${endTime}`);
-    
 
     setAvailableData({
       available_date: selectedDate,

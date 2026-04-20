@@ -6,7 +6,7 @@ import axios from "axios";
  * מאפשרת בחירה מרובה של קבצים, הצגת תצוגה מקדימה (Preview),
  * ושליחה לשרת בפורמט FormData.
  */
-export default function ImageUpload({ user }) {
+export default function ImageUpload({ role , user }) {
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [existingImages, setExistingImages] = useState([]); 
@@ -18,11 +18,18 @@ export default function ImageUpload({ user }) {
 
   const fetchAllImages = async () => {
     try {
-      const response = await axios.get("http://localhost:3030/provider/MyImages", {
+      let url
+      if (role === "Chief" || role === "Hall_Owner")
+        url="http://localhost:3030/provider/MyImages"
+      else if (role === "Admin" )
+        url=`http://localhost:3030/admin/ProviderImages/${user.id}`
+      else if (role === "Customer" )
+        url=`http://localhost:3030/customer/ProviderImages/${user.id}`
+
+      const response = await axios.get(url, {
         withCredentials: true
       });
       if (response.data.success) {
-        // שמירת רשימת נתיבי התמונות מהשרת
         setExistingImages(response.data.data || []);
       }
     } catch (error) {
@@ -32,7 +39,7 @@ export default function ImageUpload({ user }) {
 
   useEffect(() => {
     fetchAllImages();
-  }, []);
+  }, [user.id,role]);
   /**
    * מטפל בשינוי בקלט הקבצים ומעדכן את ה-State.
    * כולל הגבלה ל-5 תמונות כפי שהוגדר ב-Backend.
@@ -55,9 +62,7 @@ export default function ImageUpload({ user }) {
       }
       return true;
     });
-
     setImages((prev) => [...prev, ...validFiles]);
-
   };
 
   /**
@@ -106,9 +111,6 @@ export default function ImageUpload({ user }) {
 };
 
 
-
-
-
 const removeImageFromDB = async (indexToRemove, pathToRemove) => {
   try {
     const response = await axios.delete(
@@ -125,11 +127,11 @@ const removeImageFromDB = async (indexToRemove, pathToRemove) => {
     alert("An error occurred while deleting the image.");
   }
 };
-
-
-        
+     
   return (
-    <div className={classes.imagediv}>
+    <>
+     {(role==="Hall_Owner" || role==="Chief")  && (
+       <div className={classes.imagediv}>
       <div className={classes.header}>
         <h3>Business Gallery</h3>
         {/* הצגת המונה למשתמש */}
@@ -183,6 +185,21 @@ const removeImageFromDB = async (indexToRemove, pathToRemove) => {
       >
         {uploading ? "Uploading..." : "Save New Images"}
       </button>
-    </div>
+      </div>
+      )}
+
+      {(role === "Admin" || role==="Customer") && (
+        <div className={classes.previewContainer}>
+        {/* תמונות מה-DB */}
+        {existingImages.map((img, index) => (
+          <div key={`existing-${index}`} className={classes.imageWrapper}>
+            <img src={`http://localhost:3030/uploads/${img.image_path}`} alt="existing" className={classes.previewImg} />
+          </div>
+        ))}
+        </div>
+
+      )}
+      </>
+
   );
 }

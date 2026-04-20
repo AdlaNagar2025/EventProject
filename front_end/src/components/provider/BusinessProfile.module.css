@@ -1,0 +1,13 @@
+.container{
+    background-color: rgb(206, 181, 181);
+}
+.section{
+    border-radius: 3px solid red;
+
+}
+
+.formGroup{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}

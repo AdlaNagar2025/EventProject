@@ -9,12 +9,14 @@ const {
   getUsersByRole,
   getAllChiefsProfile,
   getAllHallsOwnerProfile,
-  getProfile,
-  updateBusinessStatus,
   getAllServices,
   deactivateUser,
   getAllServicesAccordingToStatus,
 } = require("../database/queries/adminFunc");
+const {getProfile , updateBusinessStatus} =require("../database/queries/commonFunc");
+const { getAllImages } = require("../database/queries/uploadImages");
+const { getCalandar } = require("../database/queries/calendar");
+
 
 const router = express.Router();
 
@@ -177,5 +179,31 @@ router.get("/Profile/:id", async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+
+
+router.get("/ProviderImages/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await getAllImages(id);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error("Error fetching images:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+
+router.get("/ProviderCalandar/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await getCalandar(id);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error("Error fetching images:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+
 
 module.exports = router;
