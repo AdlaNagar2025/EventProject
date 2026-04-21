@@ -19,9 +19,8 @@ export default function BusinessProfile({user,provider}) {
 
         const response = await axios.get( url,{ withCredentials: true, }, );
         setData(response.data.data)
-        
         console.log("I am in BusinessProfile Componenta " +response.data.data);
-   
+        
       } catch (error) {
         console.error("Error fetching profile:", error);
       }

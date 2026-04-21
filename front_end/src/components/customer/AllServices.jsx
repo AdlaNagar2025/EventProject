@@ -1,3 +1,4 @@
+import classes from "./allServices.module.css"
 import axios from "axios";
 import { useEffect, useState } from "react";
 import BusinessProfile from "../CommonComponents/BusinessProfile";
@@ -18,44 +19,30 @@ export default function AllServices({user}) {
     } catch (error) {
         console.error("Fetch failed:", error.message);
     }
-
         }
      
         fetchAllServices()
 
     },[])
+return (
+    <div className={classes.servicesContainer}>
+      <h1 className={classes.title}>Our Wedding Services</h1>
+      
+      <div className={classes.countBadge}>
+        Found {providers.length} matching services
+      </div>
 
-
-    return(
-        <div>
-             <h1>aLL</h1>  
-             <h2>{providers.length}</h2>      
-             {providers.map(p =>(
-                <div  key={p.id} >
-                <BusinessProfile user={user} provider={p}/>
-                </div>
-            ))}
-        </div>
-    // <div>
-    //     <h1>All Available Services</h1>
-    //     <h2>Found {providers.length} providers</h2>
-    //     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-    //         {providers.map((p) => (
-    //             <div key={p.id} style={{ border: '1px solid #ccc', padding: '10px', borderRadius: '8px' }}>
-    //                 <h3>{p.first_name}</h3>
-    //                 <p>Type: {p.provider_type}</p>
-    //                 <p>Email: {p.email}</p>
-    //                 {/* כאן תוכלי בהמשך לשים את הקומפוננטה של BusinessProfile */}
-    //             </div>
-    //         ))}
-    //     </div>
-    // </div>
-);
-
-    
+      <div className={classes.grid}>
+        {providers.map((p) => (
+          <div key={p.id} className={classes.profileWrapper}>
+            {/* כאן אנחנו קוראים לפרופיל שבנינו קודם */}
+            <BusinessProfile user={user} provider={p} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
-
-
 
 
 
