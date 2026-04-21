@@ -30,9 +30,17 @@ export default function BusinessProfile({user,provider}) {
 
   useEffect(() => {
     const fechProfile = async () => {
+      console.log("I AM IN BUSINESSPROFILE" + user.role)
+
       try {
+        let url
+        if(user.role=== "Admin")
+          url= `http://localhost:3030/admin/Profile/${provider.id}`
+        else if (user.role==="Customer")
+            url= `http://localhost:3030/customer/Profile/${provider.id}`
+
         const response = await axios.get(
-          `http://localhost:3030/admin/Profile/${provider.id}`,
+         url,
           {
             withCredentials: true,
           },

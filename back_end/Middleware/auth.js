@@ -88,7 +88,7 @@ async function isApproved(req, res, next) {
         message: "Business profile not found." 
       });
     }
-    if (profile.status === "approved") {
+    if (profile.status === "APPROVED") {
       return next(); 
     }
     return res.status(403).json({
@@ -100,5 +100,11 @@ async function isApproved(req, res, next) {
     return res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
+
+
+
+
+
+
 
 module.exports = { isProvider, isConnected, isAdmin, isActive, isApproved , isCustomer };

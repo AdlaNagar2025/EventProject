@@ -3,6 +3,7 @@ const { isConnected, isCustomer, isActive } = require("../Middleware/auth");
 const {getProfile} =require("../database/queries/commonFunc");
 const { getAllImages } = require("../database/queries/uploadImages");
 const { getCalandar } = require("../database/queries/calendar");
+const { getAllServicesAccordingToStatus } = require("../database/queries/adminFunc");
 const router = express.Router();
 /**
  * הגנה גלובלית על כל נתיבי משתמש.
@@ -47,6 +48,15 @@ router.get("/ProviderCalendar/:id", async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+
+
+
+
+router.get("/AllServices" ,async(req,res)=>{
+  const result=await getAllServicesAccordingToStatus("APPROVED")
+  console.log("I am in BACKEND "+result)
+  return res.json ({success:true , data:result})
+})
 
 
 
