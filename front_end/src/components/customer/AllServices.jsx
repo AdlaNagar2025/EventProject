@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import BusinessProfile from "../provider/BusinessProfile";
+import BusinessProfile from "../CommonComponents/BusinessProfile";
 
 
 export default function AllServices({user}) {

@@ -1,7 +1,7 @@
 import React, { useState , useEffect } from "react";
-import BusinessAccount from "./BusinessAccount";
-import ImageUpload from "./ImageUpload";
-import Calendar from "./Calendar";
+import BusinessAccount from "../Basic/BusinessAccount";
+import ImageUpload from "../Basic/ImageUpload";
+import Calendar from "../Basic/Calendar";
 import classes from "./DetailsOFbusiness.module.css";
 import axios from "axios";
 

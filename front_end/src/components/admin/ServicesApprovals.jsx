@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import classes from "./servicesapprovals.module.css";
-import BusinessProfile from "../provider/BusinessProfile";
+import BusinessProfile from "../CommonComponents/BusinessProfile";
 
 export default function ServicesApprovals({user}) {
   const [type, setType] = useState("pending");
