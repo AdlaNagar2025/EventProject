@@ -13,7 +13,6 @@ export default function BusinessProfile({user,provider}) {
   useEffect(() => {
     const fetchProfile = async () => {
       console.log("I AM IN BUSINESSPROFILE" + user.role)
-
       try {
         const rolePath=user.role.toLowerCase();
         const url=`http://localhost:3030/${rolePath}/Profile/${provider.id}`
