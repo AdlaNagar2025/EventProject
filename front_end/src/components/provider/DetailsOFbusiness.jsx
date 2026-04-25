@@ -1,7 +1,7 @@
 import React, { useState , useEffect } from "react";
-import BusinessAccount from "./BusinessAccount";
-import ImageUpload from "./ImageUpload";
-import Calendar from "./Calendar";
+import BusinessAccount from "../Basic/BusinessAccount";
+import ImageUpload from "../Basic/ImageUpload";
+import Calendar from "../Basic/Calendar";
 import classes from "./DetailsOFbusiness.module.css";
 import axios from "axios";
 
@@ -69,14 +69,14 @@ async function handleStatusChange() {
 
       <section className={classes.stepCard}>
         <div className={classes.stepNumber}>2</div>
-        <ImageUpload user={user} isDisable={isDisable} />
+        <ImageUpload role={user.role} user={user} isDisable={isDisable} />
       </section>
 
       <div className={classes.divider} />
 
       <section className={classes.stepCard}>
         <div className={classes.stepNumber}>3</div>
-        <Calendar user={user} isDisable={isDisable} />
+        <Calendar role={user.role} user={user} isDisable={isDisable} />
       </section>
 
       <button 

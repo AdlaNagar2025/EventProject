@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import classes from "./servicesapprovals.module.css";
-import BusinessProfile from "../provider/BusinessProfile";
+import BusinessProfile from "../CommonComponents/BusinessProfile";
 
-export default function ServicesApprovals() {
+export default function ServicesApprovals({user}) {
   const [type, setType] = useState("pending");
   const [providers, setProviders] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState(null);
   useEffect(() => {
+    console.log(user)
     const fetchAllProviders = async () => {
       try {
         let url = `http://localhost:3030/admin/allServices/${type}`;
@@ -45,7 +46,7 @@ export default function ServicesApprovals() {
     return (
       <div>
         <button onClick={() => setSelectedProvider(null)}>Go Back</button>
-        <BusinessProfile provider={selectedProvider} />
+        <BusinessProfile user={user} provider={selectedProvider} />
       </div>
     );
   }

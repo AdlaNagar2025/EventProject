@@ -98,7 +98,7 @@ async function checkStatus(providerId, role) {
   }
 
   const result = await doQuery(sql, [providerId]);
-  return result[0]?.status; // מחזיר רק את הסטטוס עצמו (למשל "PENDING")
+  return result[0]?.status;
 }
 
 

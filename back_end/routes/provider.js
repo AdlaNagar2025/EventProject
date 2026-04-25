@@ -9,8 +9,7 @@ const {createBusinessProfile ,checkStatus}= require("../database/queries/busines
 const upload = require("../Middleware/upload");
 const {uploadImagesToDB,getAllImages , deleteImage} = require("../database/queries/uploadImages");
 const { fillCalendar, getCalandar } = require("../database/queries/calendar");
-const {getProfile} =require("../database/queries/adminFunc")
-const { updateBusinessStatus} = require("../database/queries/adminFunc");
+const {getProfile , updateBusinessStatus} =require("../database/queries/commonFunc")
 
 /**
  * הגנה גלובלית על כל נתיבי ה-Provider:
