@@ -4,6 +4,7 @@ const {getProfile} =require("../database/queries/commonFunc");
 const { getAllImages } = require("../database/queries/uploadImages");
 const { getCalandar } = require("../database/queries/calendar");
 const { getAllServicesAccordingToStatus } = require("../database/queries/adminFunc");
+const {getResultSearching} = require("../database/queries/customerFunc")
 const router = express.Router();
 /**
  * הגנה גלובלית על כל נתיבי משתמש.
@@ -56,6 +57,16 @@ router.get("/AllServices" ,async(req,res)=>{
   const result=await getAllServicesAccordingToStatus("APPROVED")
   console.log("I am in BACKEND "+result)
   return res.json ({success:true , data:result})
+})
+
+
+
+
+router.post("/Searching" , async(req,res)=>{
+  const result=await getResultSearching(req.body)
+  console.log("I am in BACKEND IN SEARCHING CUSTOMER ROUTE LINE66"+result)
+  return res.json ({success:true , data:result})
+
 })
 
 

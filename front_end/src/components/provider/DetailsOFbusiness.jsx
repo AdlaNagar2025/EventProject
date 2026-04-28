@@ -35,8 +35,8 @@ function DetailsOFbusiness({ user }) {
 console.log(user)
 async function handleStatusChange() {
     try {
-      const tableName = user.role=== "Chief" ? "chiefs" : "halls";
-      const id=user.id
+      const tableName = user?.role=== "Chief" ? "chiefs" : "halls";
+      const id=user?.id
       const newStatus="PENDING"
       const response = await axios.post(
         "http://localhost:3030/provider/approve-business",
@@ -69,14 +69,14 @@ async function handleStatusChange() {
 
       <section className={classes.stepCard}>
         <div className={classes.stepNumber}>2</div>
-        <ImageUpload role={user.role} user={user} isDisable={isDisable} />
+        <ImageUpload role={user?.role} user={user} isDisable={isDisable} />
       </section>
 
       <div className={classes.divider} />
 
       <section className={classes.stepCard}>
         <div className={classes.stepNumber}>3</div>
-        <Calendar role={user.role} user={user} isDisable={isDisable} />
+        <Calendar role={user?.role} user={user} isDisable={isDisable} />
       </section>
 
       <button 

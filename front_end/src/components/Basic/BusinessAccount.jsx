@@ -23,29 +23,29 @@ export default function BusinessAccount({ user  }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (user.role === "Chief") {
+    if (user?.role === "Chief") {
       setChiefData((prev) => ({ ...prev, [name]: value }));
-    } else if (user.role === "Hall_Owner") {
+    } else if (user?.role === "Hall_Owner") {
       setHallData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const submitProfile = async (e) => {
     e.preventDefault();
-    const currentData = user.role === "Chief" ? chiefData : hallData;
+    const currentData = user?.role === "Chief" ? chiefData : hallData;
     if (currentData.description.length < 20) {
       return alert(
         "Please provide a more detailed description (at least 20 characters).",
       );
     }
-    if (user.role === "Chief") {
+    if (user?.role === "Chief") {
       const { price_per_hour, experience_years, capacity } = chiefData;
       if (price_per_hour <= 0 || experience_years < 0 || capacity <= 0) {
         return alert(
           "Please enter valid positive values for price, experience, and capacity.",
         );
       }
-    } else if (user.role === "Hall_Owner") {
+    } else if (user?.role === "Hall_Owner") {
       const { price, capacity } = hallData;
       if (price <= 0 || capacity <= 0) {
         return alert(
@@ -55,7 +55,7 @@ export default function BusinessAccount({ user  }) {
     }
     setIsSubmitting(true);
     try {
-      const dataToSend = user.role === "Chief" ? chiefData : hallData;
+      const dataToSend = user?.role === "Chief" ? chiefData : hallData;
       const response = await axios.post(
         "http://localhost:3030/provider/businessAccount",
         dataToSend,
@@ -88,7 +88,7 @@ export default function BusinessAccount({ user  }) {
 
         if (response.data.success && response.data.data) {
           const dbData = response.data.data;
-          if (user.role === "Chief") {
+          if (user?.role === "Chief") {
             setChiefData({
               specialty: dbData.specialty || "",
               phone: dbData.phone || "",
@@ -99,7 +99,7 @@ export default function BusinessAccount({ user  }) {
               city: dbData.city || "",
               street: dbData.street || "",
             });
-          } else if (user.role === "Hall_Owner") {
+          } else if (user?.role === "Hall_Owner") {
             setHallData({
               hall_name: dbData.hall_name || "",
               city: dbData.city || "",
@@ -130,7 +130,7 @@ export default function BusinessAccount({ user  }) {
   }
 
   // שאר הלוגיקה (handleChange, submitProfile...)
-  const hasExistingData = user.role === "Chief" 
+  const hasExistingData = user?.role === "Chief" 
     ? chiefData.specialty !== "" 
     : hallData.hall_name !== "";
 
@@ -138,10 +138,10 @@ export default function BusinessAccount({ user  }) {
   return (
     <div className={classes.container}>
       <h2>Business Profile Setup</h2>
-      <p>Hello {user.first_name}, please complete your business details</p>
+      <p>Hello {user?.first_name}, please complete your business details</p>
 
       <form className={classes.form} onSubmit={submitProfile}>
-        {user.role === "Chief" && (
+        {user?.role === "Chief" && (
           <div className={classes.section}>
             <h3>Chief Professional Details</h3>
             <input
@@ -201,7 +201,7 @@ export default function BusinessAccount({ user  }) {
           </div>
         )}
 
-        {user.role === "Hall_Owner" && (
+        {user?.role === "Hall_Owner" && (
           <div className={classes.section}>
             <h3>Hall Information</h3>
             <input
@@ -267,7 +267,7 @@ export default function BusinessAccount({ user  }) {
           name="description"
           className={classes.textarea}
           value={
-            user.role === "Chief" ? chiefData.description : hallData.description
+            user?.role === "Chief" ? chiefData.description : hallData.description
           }
           onChange={handleChange}
           minLength={20}

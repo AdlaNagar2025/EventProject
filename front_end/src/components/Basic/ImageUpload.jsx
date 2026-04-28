@@ -33,13 +33,14 @@ export default function ImageUpload({ role , user }) {
         setExistingImages(response.data.data || []);
       }
     } catch (error) {
-      console.error("Error fetching images:", error);
+      console.log("Error fetching images:", error);
     }
   };
 
-  useEffect(() => {
+ useEffect(() => {
+ if(user)
     fetchAllImages();
-  }, [user.id,role]);
+  }, [user?.id,role]);
   /**
    * מטפל בשינוי בקלט הקבצים ומעדכן את ה-State.
    * כולל הגבלה ל-5 תמונות כפי שהוגדר ב-Backend.

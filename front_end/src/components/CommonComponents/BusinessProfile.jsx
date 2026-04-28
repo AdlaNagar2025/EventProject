@@ -12,7 +12,7 @@ export default function BusinessProfile({user,provider}) {
  
   useEffect(() => {
     const fetchProfile = async () => {
-      console.log("I AM IN BUSINESSPROFILE" + user.role)
+      console.log("I AM IN BUSINESSPROFILE" + user?.role)
       try {
         const rolePath=user.role.toLowerCase();
         const url=`http://localhost:3030/${rolePath}/Profile/${provider.id}`
@@ -28,8 +28,9 @@ export default function BusinessProfile({user,provider}) {
         setLoading(false);
       }
     };
+    if(user)
     fetchProfile();
-  }, [provider.id , user.role]);
+  }, [provider.id , user?.role]);
   if (loading) return <div className={classes.loader}>Loading Profile...</div>;
   if (!data) return <div>No data found for this business.</div>;
   return (
@@ -71,11 +72,11 @@ export default function BusinessProfile({user,provider}) {
       <hr className={classes.divider} />
 
       <section className={classes.mediaSection}>
-        <ImageUpload role={user.role} user={provider} />
+        <ImageUpload role={user?.role} user={provider} />
       </section>
 
       <section className={classes.calendarSection}>
-        <Calendar role={user.role} user={provider} />
+        <Calendar role={user?.role} user={provider} />
       </section>
     </div>
   );

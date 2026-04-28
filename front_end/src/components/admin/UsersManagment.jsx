@@ -81,29 +81,29 @@ export default function UsersManagment() {
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.first_name}</td>
-                <td>{user.last_name}</td>
-                <td>{user.email}</td>
-                <td>{user.role}</td>
+              <tr key={user?.id}>
+                <td>{user?.first_name}</td>
+                <td>{user?.last_name}</td>
+                <td>{user?.email}</td>
+                <td>{user?.role}</td>
                 <td
                   style={{
-                    color: user.is_active ? "green" : "red",
+                    color: user?.is_active ? "green" : "red",
                     fontWeight: "bold",
                   }}
                 >
-                  {user.is_active === 1 ? "Active" : "Inactive"}
+                  {user?.is_active === 1 ? "Active" : "Inactive"}
                 </td>
                 <td>
                   <button
-                    onClick={() => handleToggleActive(user.id, user.is_active)}
+                    onClick={() => handleToggleActive(user?.id, user?.is_active)}
                     className={
-                      user.is_active
+                      user?.is_active
                         ? classes.deactivateBtn
                         : classes.activateBtn
                     }
                   >
-                    {user.is_active ? "Deactivate" : "Activate"}
+                    {user?.is_active ? "Deactivate" : "Activate"}
                   </button>
                 </td>
               </tr>
