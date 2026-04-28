@@ -16,6 +16,8 @@ SELECT  chiefs.chief_id as id FROM chiefs WHERE city=? AND capacity >=? AND chie
 );`;
   const result = await doQuery(sql, values);
 
+  console.log("The Result Of Searching 🔍🔍" + result);
+
   return result;
 }
 

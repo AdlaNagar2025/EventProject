@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import classes from "./findavendor.module.css";
 import BusinessProfile from "../CommonComponents/BusinessProfile";
+import ServiceCard from "../BasicToProviderProfile/ServiceCard";
 import axios from "axios";
 
 export default function FindAVendor({ user }) {
@@ -32,6 +33,8 @@ export default function FindAVendor({ user }) {
         setResultSearching(response.data.data);
       } catch (error) {
         console.error("Search failed", error);
+      } finally {
+        setIsSearch(false);
       }
     };
     fetchSearching();
@@ -65,7 +68,7 @@ export default function FindAVendor({ user }) {
       </div>
       <div className={classes.result}>
         {resultSearching.map((p) => (
-          <BusinessProfile user={user} provider={p} key={p.id} />
+          <ServiceCard user={user} provider={p} key={p.id} />
         ))}
       </div>
 
