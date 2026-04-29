@@ -46,6 +46,15 @@ export default function FindAVendor({ user }) {
   };
 
   const handleSearch = async () => {
+    if (searchParams.capacity && searchParams.capacity <= 0) {
+      alert("Capacity must be greater than 0");
+      return;
+    }
+
+    if (searchParams.price && searchParams.price < 0) {
+      alert("Price cannot be negative");
+      return;
+    }
     setIsLoading(true);
     setHasSearched(true);
     try {
