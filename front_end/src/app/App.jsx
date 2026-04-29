@@ -19,6 +19,7 @@ import axios from "axios";
 import CitySelect from "../components/provider/CitySelect";
 import AllServices from "../components/customer/AllServices";
 import FindAVendor from "../components/customer/FindAVendor";
+import BookEvent from "../components/customer/BookEvent";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -51,7 +52,6 @@ function App() {
   // }
 
 return (
-
   <Router>
     <div className={styles.appWrapper}>
       <Navbar user={user} setUserTo={setUser} />
@@ -84,13 +84,19 @@ return (
               element={<DetailsOFbusiness user={user} />}
             />
             <Route path="/usersmanagment" element={<UsersManagment />} />
-            <Route path="/servicesapprovals" element={<ServicesApprovals user={user}  />} />
+            <Route
+              path="/servicesapprovals"
+              element={<ServicesApprovals user={user} />}
+            />
 
+            <Route
+              path="/allApprovedServices"
+              element={<AllServices user={user} />}
+            />
+            <Route path="/findavendor" element={<FindAVendor user={user} />} />
+            
+            <Route path="/bookEvent" element={<BookEvent user={user} />} />
 
-
-
-            <Route path="/allApprovedServices" element={<AllServices user={user}/>}/>
-            <Route path="/findavendor" element={<FindAVendor user={user}/>}/>
             <Route path="*" element={<h2>Page Not Found 404</h2>} />
           </Routes>
         </main>

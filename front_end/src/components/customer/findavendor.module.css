@@ -1,7 +1,13 @@
-.search{
+.search {
   background-color: rgb(158, 208, 236);
 }
 
-.search input{
+.search input {
   display: block;
+}
+
+.result {
+  background-color: pink;
+  color: aliceblue;
+  border-radius: 3px solid white;
 }
