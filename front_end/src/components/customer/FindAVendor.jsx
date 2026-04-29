@@ -46,6 +46,10 @@ export default function FindAVendor({ user }) {
   };
 
   const handleSearch = async () => {
+    if (!searchParams.date) {
+      alert("Please select a date for your event.");
+      return;
+    }
     if (searchParams.capacity && searchParams.capacity <= 0) {
       alert("Capacity must be greater than 0");
       return;
@@ -54,6 +58,12 @@ export default function FindAVendor({ user }) {
     if (searchParams.price && searchParams.price < 0) {
       alert("Price cannot be negative");
       return;
+    }
+    if (searchParams.startTime && searchParams.endTime) {
+      if (searchParams.startTime >= searchParams.endTime) {
+        alert("End time must be after start time.");
+        return;
+      }
     }
     setIsLoading(true);
     setHasSearched(true);

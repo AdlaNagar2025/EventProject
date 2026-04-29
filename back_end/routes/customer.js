@@ -62,12 +62,18 @@ router.get("/AllServices" ,async(req,res)=>{
 
 
 
-router.post("/Searching" , async(req,res)=>{
-  const result=await getResultSearching(req.body)
-  console.log("I am in BACKEND IN SEARCHING CUSTOMER ROUTE LINE66"+result)
-  return res.json ({success:true , data:result})
+router.post("/Searching", async (req, res) => {
+  try {
+    const result = await getResultSearching(req.body);
 
-})
+    return res.json({ success: true, data: result });
+  } catch (error) {
+    console.error("Route Error:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+});
 
 
 

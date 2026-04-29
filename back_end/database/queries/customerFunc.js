@@ -1,50 +1,84 @@
 const doQuery = require("../query");
 
 async function getResultSearching(dataToSearch) {
-  const city = dataToSearch.city || "";
-  const capacity = dataToSearch.capacity || 0;
-  const price = dataToSearch.price || 999999;
-  const startTime = dataToSearch.startTime;
-  const endTime = dataToSearch.endTime;
-  const date = dataToSearch.date;
+  let finalValues = [];
+  if (!dataToSearch.date) {
+    throw new Error("Missing search date");
+  }
+  const today = new Date().toISOString().split("T")[0];
+  if (dataToSearch.date < today) {
+    console.log("Validation Error: Cannot search for past dates");
+    return [];
+  }
 
-  const values = [
-    date,
-    startTime,
-    endTime,
-    city,
-    capacity,
-    price,
-    city,
-    capacity,
-    price,
-  ];
-  console.log(city);
-  console.log(capacity);
-  console.log(price);
+  if (dataToSearch.startTime && dataToSearch.endTime) {
+    if (dataToSearch.startTime >= dataToSearch.endTime) {
+      console.log("Validation Error: Start time is after end time");
+      return [];
+    }
+  }
 
-  const sql = `SELECT *, role AS provider_type 
-FROM users 
-WHERE id IN (
-    -- ספקים שזמינים בתאריך ספציפי
-    SELECT provider_id FROM availability 
-    WHERE available_date = ? AND is_available = 1 AND start_time <= ? AND end_time >= ?
-)
-AND id IN (
-    -- ספקים שהם אולמות שעונים על הקריטריונים
-    SELECT hall_id FROM halls 
-    WHERE city = ? AND capacity >= ?  AND price <= ?
-    
-    UNION -- איחוד של ה-ID בלבד
-    
-    -- ספקים שהם שפים שעונים על הקריטריונים
-    SELECT chief_id FROM chiefs 
-    WHERE city = ? AND capacity >= ? AND price_per_hour <= ?
-);`;
-  const result = await doQuery(sql, values);
+  const price = dataToSearch.price ? parseInt(dataToSearch.price) : null;
+  const capacity = dataToSearch.capacity
+    ? parseInt(dataToSearch.capacity)
+    : null;
 
-  console.log("The Result Of Searching 🔍🔍" + result);
+  // 1. זמינות (Availability)
+  let availSql = `SELECT provider_id FROM availability WHERE available_date = ? AND is_available = 1`;
+  finalValues.push(dataToSearch.date);
 
+  if (dataToSearch.startTime) {
+    availSql += " AND start_time <= ?";
+    finalValues.push(dataToSearch.startTime);
+  }
+  if (dataToSearch.endTime) {
+    availSql += " AND end_time >= ?";
+    finalValues.push(dataToSearch.endTime);
+  }
+
+  // 2. תנאים לאולמות
+  let hallCond = "";
+  if (dataToSearch.city) {
+    hallCond += " AND city = ?";
+    finalValues.push(dataToSearch.city);
+  }
+  if (price) {
+    hallCond += " AND price <= ?";
+    finalValues.push(dataToSearch.price);
+  }
+  if (capacity) {
+    hallCond += " AND capacity >= ?";
+    finalValues.push(dataToSearch.capacity);
+  }
+
+  // 3. תנאים לשפים
+  let chiefCond = "";
+  if (dataToSearch.city) {
+    chiefCond += " AND city = ?";
+    finalValues.push(dataToSearch.city);
+  }
+  if (price) {
+    chiefCond += " AND price_per_hour <= ?";
+    finalValues.push(dataToSearch.price);
+  }
+  if (capacity) {
+    chiefCond += " AND capacity >= ?";
+    finalValues.push(dataToSearch.capacity);
+  }
+
+  // 4. השאילתה הסופית
+  const finalSql = `
+        SELECT *, role AS provider_type FROM users
+        WHERE id IN (${availSql})
+        AND (
+            id IN (SELECT hall_id FROM halls WHERE 1=1 ${hallCond})
+            OR 
+            id IN (SELECT chief_id FROM chiefs WHERE 1=1 ${chiefCond})
+        )
+    `;
+
+  const result = await doQuery(finalSql, finalValues);
+  console.log("The Result💯 ", result);
   return result;
 }
 
