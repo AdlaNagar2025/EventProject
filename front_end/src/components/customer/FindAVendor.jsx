@@ -2,10 +2,18 @@ import { useEffect, useState } from "react";
 import classes from "./findavendor.module.css";
 import ServiceCard from "../BasicToProviderProfile/ServiceCard";
 import axios from "axios";
-
+/**
+ * קומפוננטת FindAVendor:
+ * מנהלת את ממשק החיפוש והסינון של ספקי שירות.
+ * מאפשרת למשתמש לחפש לפי מיקום, תאריך, שעה ותקציב.
+ * מציגה את כל הספקים בטעינה ראשונית, ומתעדכנת לפי תוצאות החיפוש מהשרת.
+ */
 export default function FindAVendor({ user }) {
-  const [issearch, setIsSearch] = useState(false);
-  const [dataToSearch, setDataToSearch] = useState({
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [providers, setProviders] = useState([]);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [searchParams, setSearchParams] = useState({
     city: "",
     capacity: "",
     price: "",
@@ -14,9 +22,7 @@ export default function FindAVendor({ user }) {
     endTime: "",
   });
 
-  const [resultSearching, setResultSearching] = useState([]);
-  const [providers, setProviders] = useState([]);
-
+  // טעינת כל הספקים בטעינת הדף
   useEffect(() => {
     const fetchAllServices = async () => {
       try {
@@ -31,103 +37,146 @@ export default function FindAVendor({ user }) {
         console.error("Fetch failed:", error.message);
       }
     };
-
     fetchAllServices();
   }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setDataToSearch((prev) => ({ ...prev, [name]: value }));
-    console.log(dataToSearch);
+    setSearchParams((prev) => ({ ...prev, [name]: value }));
   };
 
-  useEffect(() => {
-    if (!dataToSearch.city) return;
-    const fetchSearching = async () => {
-      try {
-        const response = await axios.post(
-          "http://localhost:3030/customer/Searching",
-          dataToSearch,
-          { withCredentials: true },
-        );
-        console.log(response.data.data);
-        setResultSearching(response.data.data);
-      } catch (error) {
-        console.error("Search failed", error);
-      } finally {
-        setIsSearch(false);
-      }
-    };
-    fetchSearching();
-  }, [issearch]);
+  const handleSearch = async () => {
+    setIsLoading(true);
+    setHasSearched(true);
+    try {
+      const response = await axios.post(
+        "http://localhost:3030/customer/Searching",
+        searchParams,
+        { withCredentials: true },
+      );
+      setSearchResults(response.data.data);
+    } catch (error) {
+      console.log("Search failed", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div>
-      <p>Find Your Event Team:Unified Vendor Search</p>
+    <div className={classes.container}>
+      <h2>Find Your Event Team: Unified Vendor Search</h2>
+
       <div className={classes.search}>
-        <label>Date:</label>
-        <input
-          type="date"
-          min={new Date().toISOString().split("T")[0]}
-          value={dataToSearch.date}
-          name="date"
-          onChange={handleInputChange}
-        />
-        <label>Start Time:</label>
-        <input
-          type="time"
-          value={dataToSearch.startTime}
-          name="startTime"
-          onChange={handleInputChange}
-        />
-        <label>End Time:</label>
-        <input
-          type="time"
-          value={dataToSearch.endTime}
-          name="endTime"
-          onChange={handleInputChange}
-        />
+        <div className={classes.inputGroup}>
+          <label htmlFor="date">Date:</label>
+          <input
+            id="date"
+            type="date"
+            min={new Date().toISOString().split("T")[0]}
+            value={searchParams.date}
+            name="date"
+            onChange={handleInputChange}
+          />
+        </div>
 
-        <label>Location: </label>
-        <input
-          type="text"
-          value={dataToSearch.city}
-          name="city"
-          onChange={handleInputChange}
-        />
-        <label>capacity: </label>
-        <input
-          type="number"
-          value={dataToSearch.capacity}
-          name="capacity"
-          onChange={handleInputChange}
-        />
-        <label>price: </label>
-        <input
-          type="number"
-          value={dataToSearch.price}
-          name="price"
-          onChange={handleInputChange}
-        />
+        <div className={classes.inputGroup}>
+          <label htmlFor="startTime">Start Time:</label>
+          <input
+            id="startTime"
+            type="time"
+            value={searchParams.startTime}
+            name="startTime"
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className={classes.inputGroup}>
+          <label htmlFor="endTime">End Time:</label>
+          <input
+            id="endTime"
+            type="time"
+            value={searchParams.endTime}
+            name="endTime"
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className={classes.inputGroup}>
+          <label htmlFor="city">Location:</label>
+          <input
+            id="city"
+            type="text"
+            value={searchParams.city}
+            name="city"
+            onChange={handleInputChange}
+            placeholder="Enter city..."
+          />
+        </div>
+
+        <div className={classes.inputGroup}>
+          <label htmlFor="capacity">Capacity:</label>
+          <input
+            id="capacity"
+            type="number"
+            value={searchParams.capacity}
+            name="capacity"
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className={classes.inputGroup}>
+          <label htmlFor="price">Max Price:</label>
+          <input
+            id="price"
+            type="number"
+            value={searchParams.price}
+            name="price"
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <button
+          onClick={handleSearch}
+          disabled={isLoading}
+          className={classes.searchBtn}
+        >
+          {isLoading ? "Searching..." : "Search"}
+        </button>
       </div>
+
+      <hr />
+
+      {/* תצוגת תוצאות החיפוש */}
       <div className={classes.result}>
-        {resultSearching.map((p) => (
-          <ServiceCard user={user} provider={p} key={p.id} data={dataToSearch} />
-        ))}
+        {searchResults.length > 0 ? (
+          searchResults.map((p) => (
+            <ServiceCard
+              user={user}
+              provider={p}
+              key={p.id}
+              data={searchParams}
+            />
+          ))
+        ) : hasSearched && !isLoading ? (
+          <p className={classes.noResults}>
+            No vendors found for your criteria.
+          </p>
+        ) : null}
       </div>
 
-      {resultSearching.length === 0 && (
+      {/* תצוגת ברירת מחדל - לפני שבוצע חיפוש */}
+      {!hasSearched && (
         <div className={classes.providersGrid}>
           {providers.map((p) => (
-            <div key={p.id} className={classes.cardContainer}>
-              <ServiceCard user={user} provider={p} data={dataToSearch} />
-              {/* <button>Select </button> */}
-            </div>
+            <ServiceCard
+              key={p.id}
+              user={user}
+              provider={p}
+              data={searchParams}
+            />
           ))}
         </div>
       )}
-
-      <button onClick={() => setIsSearch(true)}>Search</button>
     </div>
   );
 }
