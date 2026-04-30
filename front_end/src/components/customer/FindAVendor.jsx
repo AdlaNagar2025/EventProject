@@ -50,6 +50,26 @@ export default function FindAVendor({ user }) {
       alert("Please select a date for your event.");
       return;
     }
+    if (!searchParams.startTime) {
+      alert("Please select a start time for your event.");
+      return;
+    }
+    if (!searchParams.endTime) {
+      alert("Please select a end time for your event.");
+      return;
+    }
+
+    console.log(searchParams.startTime);
+    console.log(searchParams.endTime);
+    if (searchParams.startTime > searchParams.endTime) {
+      alert("End time must be after start time.");
+      return;
+    }
+
+    if (!searchParams.capacity) {
+      alert("Please select a capacity for your event.");
+      return;
+    }
     if (searchParams.capacity && searchParams.capacity <= 0) {
       alert("Capacity must be greater than 0");
       return;
@@ -59,12 +79,7 @@ export default function FindAVendor({ user }) {
       alert("Price cannot be negative");
       return;
     }
-    if (searchParams.startTime && searchParams.endTime) {
-      if (searchParams.startTime >= searchParams.endTime) {
-        alert("End time must be after start time.");
-        return;
-      }
-    }
+
     setIsLoading(true);
     setHasSearched(true);
     try {
@@ -173,7 +188,7 @@ export default function FindAVendor({ user }) {
               user={user}
               provider={p}
               key={p.id}
-              data={searchParams}
+              searchParams={searchParams}
             />
           ))
         ) : hasSearched && !isLoading ? (

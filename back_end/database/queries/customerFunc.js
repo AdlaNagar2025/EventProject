@@ -1,9 +1,20 @@
 const doQuery = require("../query");
-
+/**
+ * מבצעת חיפוש דינמי של ספקים (אולמות ושפים) לפי זמינות וקריטריונים.
+ * הפונקציה בודקת ולידציה של תאריך (לא בעבר) וזמנים (התחלה לפני סוף),
+ * ובונה שאילתת SQL מורכבת המשלבת את טבלאות המשתמשים, הזמינות, האולמות והשפים.
+ * @param {Object} dataToSearch - אובייקט המכיל: date, startTime, endTime, city, price, capacity.
+ * @returns {Promise<Array>} - מערך של ספקים שעומדים בכל תנאי החיפוש.
+ */
 async function getResultSearching(dataToSearch) {
   let finalValues = [];
-  if (!dataToSearch.date) {
-    throw new Error("Missing search date");
+  if (
+    !dataToSearch.date ||
+    !dataToSearch.capacity ||
+    !dataToSearch.startTime ||
+    !dataToSearch.endTime
+  ) {
+    throw new Error("Missing search data");
   }
   const today = new Date().toISOString().split("T")[0];
   if (dataToSearch.date < today) {
@@ -71,9 +82,9 @@ async function getResultSearching(dataToSearch) {
         SELECT *, role AS provider_type FROM users
         WHERE id IN (${availSql})
         AND (
-            id IN (SELECT hall_id FROM halls WHERE 1=1 ${hallCond})
+            id IN (SELECT hall_id FROM halls WHERE 1=1 AND status="APPROVED"  ${hallCond})
             OR 
-            id IN (SELECT chief_id FROM chiefs WHERE 1=1 ${chiefCond})
+            id IN (SELECT chief_id FROM chiefs WHERE 1=1 AND status="APPROVED" ${chiefCond})
         )
     `;
 
