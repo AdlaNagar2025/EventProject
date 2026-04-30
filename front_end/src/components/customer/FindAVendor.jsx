@@ -211,6 +211,15 @@ export default function FindAVendor({ user }) {
           ))}
         </div>
       )}
+
+      {user?.role !== "Admin" && (
+              <button
+                // onClick={handleSelectProvider}
+                // className={classes.selectBtn}
+              >
+                select
+              </button>
+            )}
     </div>
   );
 }

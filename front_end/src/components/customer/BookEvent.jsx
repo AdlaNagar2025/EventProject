@@ -15,6 +15,10 @@ export default function BookEvent({ user, provider }) {
     return <p>Missing event details. Please go back and search again.</p>;
   }
 
+  // function saveData(){
+  //   const response=await axios.post("http://localhost:3030/customer/eventData" ,data , {withCredentials:true} )
+  // }
+
   return (
     <div className={classes.EventDetails}>
       <h2>Event Details: </h2>
@@ -31,7 +35,7 @@ export default function BookEvent({ user, provider }) {
 
       <strong>Selected Provider</strong>
 
-      <button>Confirm</button>
+      {/* <button onClick={saveData}>Confirm</button> */}
     </div>
   );
 }
