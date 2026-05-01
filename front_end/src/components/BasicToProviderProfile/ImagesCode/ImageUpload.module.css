@@ -81,7 +81,6 @@
   pointer-events: auto;
   align-self: flex-end;
   background: #2c3e50; /* כחול כהה */
-
   color: white;
   border: none;
   border-radius: 50%;
@@ -94,8 +93,6 @@
   align-items: center;
   z-index: 5;
 }
-
-
 
 .starIcon:hover {
   transform: scale(1.2);
@@ -125,29 +122,85 @@
   font-weight: bold;
 }
 .starIcon {
-    pointer-events: auto;
-    font-size: 24px; /* גודל האייקון */
-    cursor: pointer;
-    color: rgba(255, 255, 255, 0.9);
-    filter: drop-shadow(0 0 2px rgba(0,0,0,0.8)); /* צל לאייקון עצמו */
-    transition: transform 0.2s, color 0.2s;
-    position: absolute;
-    bottom: 8px;
-    left: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 5;
+  pointer-events: auto;
+  font-size: 24px; /* גודל האייקון */
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8)); /* צל לאייקון עצמו */
+  transition:
+    transform 0.2s,
+    color 0.2s;
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
 }
 
 .starActive {
-    color: #ffc107 !important;
+  color: #ffc107 !important;
 }
 
 .removeBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0; /* מונע מהאייקון לזוז הצידה */
-    font-size: 14px; /* מקטין קצת את ה-X שיהיה פרופורציונלי */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0; /* מונע מהאייקון לזוז הצידה */
+  font-size: 14px; /* מקטין קצת את ה-X שיהיה פרופורציונלי */
+}
+
+.errorMessage {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+  border: 1px solid #ef9a9a;
+}
+
+.warningMessage {
+  color: #f57c00;
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+.closeError {
+  background: #2c3e50; /* כחול כהה */
+  color: white;
+  border: none;
+  border-radius: 50%;
+}
+
+.errorMessage {
+  position: relative; /* מאפשר מיקום מוחלט של ה-X בפנים */
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 12px 35px 12px 15px; /* פדינג ימני גדול יותר כדי שהטקסט לא יתנגש ב-X */
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+  border: 1px solid #ef9a9a;
+  line-height: 1.4;
+}
+
+.closeError {
+  position: absolute;
+  top: 5px;
+  right: 8px; /* מיקום בפינה הימנית העליונה */
+  background: none;
+  border: none;
+  color: #c62828;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: opacity 0.2s;
+}
+
+.closeError:hover {
+  opacity: 0.7;
 }

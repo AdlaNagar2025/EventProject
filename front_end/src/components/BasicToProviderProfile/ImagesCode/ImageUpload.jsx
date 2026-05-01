@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import classes from "./ImageUpload.module.css";
 import axios from "axios";
 import ImageItem from "./ImageItem";
+import {FaTimes } from "react-icons/fa";
+
 /**
  * ImageUpload Component
  * ---------------------
@@ -16,7 +18,9 @@ export default function ImageUpload({ role, user }) {
   const [images, setImages] = useState([]); //images that the provider selesct
   const [uploading, setUploading] = useState(false);
   const [existingImages, setExistingImages] = useState([]); //images from DB
+  const [error, setError] = useState(""); // מצב חדש להודעות שגיאה
   const MAX_IMAGES = 5;
+  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
   const totalImages = images.length + existingImages.length;
 
   const fetchAllImages = async () => {
@@ -40,34 +44,53 @@ export default function ImageUpload({ role, user }) {
   }, [user?.id, role]);
 
   const handleChangeImage = (e) => {
+    setError("");
     const selectedFiles = Array.from(e.target.files);
+
+    // Check total limit
     if (totalImages + selectedFiles.length > MAX_IMAGES) {
-      alert(`Max ${MAX_IMAGES} images.`);
+      setError(`You can only upload up to ${MAX_IMAGES} images in total.`);
       return;
     }
-    const validFiles = selectedFiles.filter(
-      (file) => file.type.startsWith("image/") && file.size <= 2 * 1024 * 1024,
+
+    // Check file size for each selected file
+    const largeFiles = selectedFiles.filter(
+      (file) => file.size > MAX_FILE_SIZE,
     );
+    if (largeFiles.length > 0) {
+      setError(
+        "Some files were skipped because they exceed the 2MB size limit.",
+      );
+    }
+
+    const validFiles = selectedFiles.filter(
+      (file) => file.type.startsWith("image/") && file.size <= MAX_FILE_SIZE,
+    );
+
     setImages((prev) => [...prev, ...validFiles]);
   };
 
   const submitGallery = async () => {
     if (images.length === 0) return;
+
     setUploading(true);
+    setError("");
     try {
       const formData = new FormData();
       images.forEach((img) => formData.append("images", img));
+
       const response = await axios.post(
         "http://localhost:3030/provider/upload-gallery",
         formData,
         { withCredentials: true },
       );
+
       if (response.data.success) {
         setImages([]);
         fetchAllImages();
       }
     } catch (error) {
-      alert("Upload failed.");
+      setError("Upload failed. Please try again or check your connection.");
     } finally {
       setUploading(false);
     }
@@ -85,7 +108,7 @@ export default function ImageUpload({ role, user }) {
       console.error(error);
     }
   };
-
+  const isGalleryValid = totalImages > 0;
   return (
     <div className={classes.imagediv}>
       <div className={classes.header}>
@@ -98,6 +121,22 @@ export default function ImageUpload({ role, user }) {
           {totalImages} / {MAX_IMAGES}
         </span>
       </div>
+      {/* Error Message Display */}
+      {error && (
+        <div className={classes.errorMessage}>
+          <span>{error}</span>
+          <button onClick={() => setError("")} className={classes.closeError}>
+            <FaTimes />
+          </button>
+        </div>
+      )}
+
+      {/* Requirement Warning */}
+      {!isGalleryValid && !uploading && (
+        <div className={classes.warningMessage}>
+          Note: Your business profile must contain at least one image.
+        </div>
+      )}
 
       <div className={classes.previewContainer}>
         {existingImages.map((img, index) => (
