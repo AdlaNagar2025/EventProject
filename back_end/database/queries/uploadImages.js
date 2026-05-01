@@ -7,32 +7,34 @@ const doQuery = require("../query");
  */
 async function uploadImagesToDB(providerId, provider_type, files) {
   if (!files || files.length === 0) {
-    return {
-      success: false,
-      message: "No images provided for database saving",
-    };
+    return { success: false, message: "No images to provided" };
   }
+
   try {
+    // 1. נבדוק אם לספק הזה כבר יש תמונה ראשית כלשהי ב-DB
+    const checkSql = `SELECT COUNT(*) as count FROM provider_images WHERE provider_id = ? AND is_main = 1`;
+    const result = await doQuery(checkSql, [providerId]);
+    const hasMain = result[0].count > 0;
+
+    // 2. נבנה את הערכים ל-INSERT
     const values = files.map((file, index) => [
       providerId,
       provider_type,
       file.filename,
+      !hasMain && index === 0 ? 1 : 0,
     ]);
 
-    const sql = `INSERT INTO provider_images (provider_id,provider_type,image_path) VALUES ?`;
+    const sql = `INSERT INTO provider_images (provider_id, provider_type, image_path, is_main) VALUES ?`;
 
     await doQuery(sql, [values]);
 
     return {
       success: true,
-      message: `${files.length} images saved to database successfully`,
+      message: `${files.length} images saved successfully`,
     };
   } catch (err) {
-    console.error("Database Error in uploadImagesToDB:", err);
-    return {
-      success: false,
-      message: "Failed to link images to the provider profile in the database",
-    };
+    console.error("Database Error:", err);
+    return { success: false, message: "Database linking failed" };
   }
 }
 

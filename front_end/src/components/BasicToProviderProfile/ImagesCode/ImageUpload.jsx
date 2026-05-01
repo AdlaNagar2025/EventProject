@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import classes from "./ImageUpload.module.css";
 import axios from "axios";
 import ImageItem from "./ImageItem";
-import {FaTimes } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 
 /**
  * ImageUpload Component
@@ -14,7 +14,7 @@ import {FaTimes } from "react-icons/fa";
  * - ניהול תצוגה מקדימה לפני שמירה.
  * - אינטגרציה עם ImageItem להצגת כל תמונה בנפרד.
  */
-export default function ImageUpload({ role, user }) {
+export default function ImageUpload({ role, user, ok }) {
   const [images, setImages] = useState([]); //images that the provider selesct
   const [uploading, setUploading] = useState(false);
   const [existingImages, setExistingImages] = useState([]); //images from DB
@@ -23,13 +23,21 @@ export default function ImageUpload({ role, user }) {
   const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
   const totalImages = images.length + existingImages.length;
 
+  useEffect(() => {
+    if (existingImages.length > 0) {
+      ok(true); // כאן הילד לוחץ על ה"שלט הרחוק" ואומר לאבא: "הכל תקין!"
+    } else {
+      ok(false); // כאן הוא אומר לאבא: "אין תמונות, אל תיתן לו לשלוח"
+    }
+  }, [existingImages.length, ok]);
+
   const fetchAllImages = async () => {
     try {
       let url;
       if (role === "Chief" || role === "Hall_Owner")
         url = "http://localhost:3030/provider/MyImages";
       else
-        url = `http://localhost:3030/${role.toLowercase()}/ProviderImages/${user.id}`;
+        url = `http://localhost:3030/${role.toLowerCase()}/ProviderImages/${user.id}`;
       const response = await axios.get(url, { withCredentials: true });
       if (response.data.success) {
         setExistingImages(response.data.data || []);
