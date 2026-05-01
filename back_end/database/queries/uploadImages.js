@@ -17,10 +17,9 @@ async function uploadImagesToDB(providerId, provider_type, files) {
       providerId,
       provider_type,
       file.filename,
-      index === 0 ? 1 : 0, // התמונה הראשונה במערך תקבל 1 (ראשית)
     ]);
 
-    const sql = `INSERT INTO provider_images (provider_id,provider_type,image_path,is_main) VALUES ?`;
+    const sql = `INSERT INTO provider_images (provider_id,provider_type,image_path) VALUES ?`;
 
     await doQuery(sql, [values]);
 
@@ -37,20 +36,25 @@ async function uploadImagesToDB(providerId, provider_type, files) {
   }
 }
 
-async function getAllImages(providerId ) {
-  const sql=`SELECT * FROM provider_images WHERE provider_id=?`
-  const result=await doQuery(sql,[providerId])
-  return result
-  
+async function getAllImages(providerId) {
+  const sql = `SELECT * FROM provider_images WHERE provider_id=?`;
+  const result = await doQuery(sql, [providerId]);
+  return result;
 }
-
-
-
-
 
 async function deleteImage(imagePath) {
   const sql = `DELETE FROM provider_images WHERE image_path = ?`;
   return await doQuery(sql, [imagePath]);
 }
 
-module.exports = {uploadImagesToDB,getAllImages , deleteImage};
+async function setMainImage(providerId, imagePath) {
+  // 1. איפוס כל התמונות של הספק הספציפי ל-0
+  const sqlReset = `UPDATE provider_images SET is_main = 0 WHERE provider_id = ?`;
+  await doQuery(sqlReset, [providerId]);
+
+  // 2. הגדרת התמונה הנבחרת ל-1
+  const sqlSet = `UPDATE provider_images SET is_main = 1 WHERE image_path = ?`;
+  return await doQuery(sqlSet, [imagePath]);
+}
+
+module.exports = { uploadImagesToDB, getAllImages, deleteImage, setMainImage };

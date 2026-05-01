@@ -1,15 +1,26 @@
 const express = require("express");
 const multer = require("multer");
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 const router = express.Router();
 const { isProvider, isConnected, isActive } = require("../Middleware/auth");
-const {createBusinessProfile ,checkStatus}= require("../database/queries/businessAccount");
+const {
+  createBusinessProfile,
+  checkStatus,
+} = require("../database/queries/businessAccount");
 const upload = require("../Middleware/upload");
-const {uploadImagesToDB,getAllImages , deleteImage} = require("../database/queries/uploadImages");
+const {
+  uploadImagesToDB,
+  getAllImages,
+  deleteImage,
+  setMainImage,
+} = require("../database/queries/uploadImages");
 const { fillCalendar, getCalandar } = require("../database/queries/calendar");
-const {getProfile , updateBusinessStatus} =require("../database/queries/commonFunc")
+const {
+  getProfile,
+  updateBusinessStatus,
+} = require("../database/queries/commonFunc");
 
 /**
  * הגנה גלובלית על כל נתיבי ה-Provider:
@@ -55,10 +66,17 @@ router.post("/upload-gallery", (req, res) => {
     // בדיקה אם קרתה שגיאה של Multer (למשל: קובץ גדול מדי או יותר מ-5 תמונות)
     if (err instanceof multer.MulterError) {
       if (err.code === "LIMIT_FILE_SIZE") {
-        return res.status(400).json({ success: false, message: "One or more files are too large (Max 2MB per image)." });
+        return res
+          .status(400)
+          .json({
+            success: false,
+            message: "One or more files are too large (Max 2MB per image).",
+          });
       }
-      return res.status(400).json({ success: false, message: `Upload error: ${err.message}` });
-    } 
+      return res
+        .status(400)
+        .json({ success: false, message: `Upload error: ${err.message}` });
+    }
     // בדיקה אם קרתה שגיאה אחרת (למשל: סוג קובץ לא תקין מה-fileFilter)
     else if (err) {
       return res.status(400).json({ success: false, message: err.message });
@@ -68,15 +86,17 @@ router.post("/upload-gallery", (req, res) => {
     try {
       const providerId = req.session.user.id;
       const provider_type = req.session.user.role;
-      const files = req.files; 
+      const files = req.files;
 
       if (!files || files.length === 0) {
-        return res.status(400).json({ success: false, message: "No files selected." });
+        return res
+          .status(400)
+          .json({ success: false, message: "No files selected." });
       }
 
       // שמירה ב-Database
       const dbResult = await uploadImagesToDB(providerId, provider_type, files);
-      
+
       if (dbResult.success) {
         return res.json({
           success: true,
@@ -86,7 +106,6 @@ router.post("/upload-gallery", (req, res) => {
       } else {
         return res.status(500).json(dbResult);
       }
-
     } catch (error) {
       console.error("Critical Upload Error:", error);
       res.status(500).json({
@@ -133,59 +152,75 @@ router.get("/getMyCalendar", async (req, res) => {
     res.status(500).json({ success: false, message: "Database error" });
   }
 });
-router.get("/MyProfile",async (req,res)=>{
+router.get("/MyProfile", async (req, res) => {
   try {
-
     const providerId = req.session.user.id;
-    console.log(providerId)
-    const result = await getProfile(providerId)
+    console.log(providerId);
+    const result = await getProfile(providerId);
     res.json({ success: true, data: result });
   } catch (error) {
     console.error("Error fetching profile:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
-router.get("/MyImages" , async(req,res)=>{
-   try {
+router.get("/MyImages", async (req, res) => {
+  try {
     const providerId = req.session.user.id;
-    const result = await getAllImages(providerId)
+    const result = await getAllImages(providerId);
     res.json({ success: true, data: result });
   } catch (error) {
     console.error("Error fetching profile:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
-
-
-
-
 
 router.delete("/deleteImage/:imagePath", async (req, res) => {
   const imagePath = req.params.imagePath;
 
   if (!imagePath) {
-    return res.status(400).json({ success: false, message: "No image path provided" });
+    return res
+      .status(400)
+      .json({ success: false, message: "No image path provided" });
   }
 
   try {
     const dbResult = await deleteImage(imagePath);
 
     if (dbResult.affectedRows > 0) {
-      const fullPath = path.join(__dirname, '../uploads', imagePath); 
-      
+      const fullPath = path.join(__dirname, "../uploads", imagePath);
 
       if (fs.existsSync(fullPath)) {
         fs.unlinkSync(fullPath); // מוחק פיזית מהכונן
         console.log(`File ${imagePath} deleted from server disk.`);
       }
 
-      return res.json({ success: true, message: "Image deleted from DB and disk" });
+      return res.json({
+        success: true,
+        message: "Image deleted from DB and disk",
+      });
     } else {
-      return res.status(404).json({ success: false, message: "Image not found in database" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Image not found in database" });
     }
   } catch (error) {
     console.error("Error in delete process:", error);
-    res.status(500).json({ success: false, message: "Server error during deletion" });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error during deletion" });
+  }
+});
+router.post("/mainImage", async (req, res) => {
+  try {
+    const { imagePath } = req.body; 
+    const providerId = req.session.user.id;
+
+    await setMainImage(providerId, imagePath);
+    res.json({ success: true, message: "Main image updated!" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to update main image" });
   }
 });
 
@@ -198,9 +233,6 @@ router.get("/MyBusinessStatus", async (req, res) => {
     res.status(500).json({ success: false, message: "Error checking status" });
   }
 });
-
-
-
 
 router.post("/approve-business", async (req, res) => {
   console.log(req.body);
