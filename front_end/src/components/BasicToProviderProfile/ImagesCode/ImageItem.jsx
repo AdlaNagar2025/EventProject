@@ -1,5 +1,6 @@
 import React from "react";
 import classes from "./ImageUpload.module.css";
+import { FaStar, FaRegStar, FaTimes } from "react-icons/fa";
 /**
  * ImageItem Component
  * -------------------
@@ -32,15 +33,16 @@ const ImageItem = ({ img, isExisting, onRemove, onSetMain, isMain }) => {
           onClick={onRemove}
           title="Remove Image"
         >
-          ×
+          <FaTimes />
         </button>
 
         {isExisting && (
           <div
-            className={classes.starIcon}
+            className={`${classes.starIcon} ${isMain ? classes.starActive : ""}`}
             onClick={() => onSetMain(img.image_path)}
+            title={isMain ? "Main Image" : "Set as Main"}
           >
-            {isMain ? "★" : "☆"}
+            {isMain ? <FaStar /> : <FaRegStar />}
           </div>
         )}
       </div>
