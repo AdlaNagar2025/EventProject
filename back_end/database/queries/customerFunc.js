@@ -93,4 +93,20 @@ async function getResultSearching(dataToSearch) {
   return result;
 }
 
-module.exports = { getResultSearching };
+async function getEventData(eventData) {
+  let values = [
+    eventData.user_id,
+    eventData.chief_id,
+    eventData.hall_id,
+    eventData.requested_date,
+    eventData.start_time,
+    eventData.end_time,
+    eventData.notes,
+  ];
+  const sql = `INSERT INTO events (user_id,chief_id,hall_id,requested_date,start_time,end_time,notes) VALUES
+(?,?,?,?,?,?,?)`;
+
+  return doQuery(sql, values);
+}
+
+module.exports = { getResultSearching, getEventData };
