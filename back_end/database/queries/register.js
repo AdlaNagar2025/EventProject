@@ -36,6 +36,7 @@ async function register(NewUser) {
     let user = { ...NewUser };
     delete user.password;
     user.id = id;
+    user.is_active = 1;
     return {
       success: true,
       message: `Welcome to EventHub, ${first_name}! Your account has been created successfully.`,

@@ -8,7 +8,7 @@ const initialChief = {
   specialty: "",
   phone: "",
   price_per_hour: "",
-  experience_years: "",
+  start_year: "",
   description: "",
   capacity: "",
   city: "",
@@ -26,7 +26,6 @@ const initialHall = {
   description: "",
 };
 
-// הגדרת השדות - כאן את קובעת מי REQUIRED ומי לא
 const CHIEF_FIELDS = [
   {
     label: "Specialty",
@@ -41,8 +40,8 @@ const CHIEF_FIELDS = [
     required: true,
   },
   {
-    label: "Experience (Years)",
-    name: "experience_years",
+    label: "Start_Year",
+    name: "start_year",
     type: "number",
     required: false,
   },
@@ -113,6 +112,8 @@ export default function BusinessAccount({ user, isDisable }) {
     e.preventDefault();
     if (data.description.length < 20)
       return alert("Description too short (min 20 chars).");
+    if (data.start_year && data.start_year > new Date().getFullYear())
+      return alert("Year Can not be in future.");
 
     setIsSubmitting(true);
     try {

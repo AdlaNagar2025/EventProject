@@ -30,9 +30,11 @@ function App() {
         );
         if (response.data.success) {
           setUser(response.data.user);
+        } else {
+          setUser(null);
         }
       } catch (error) {
-        console.error("Auth check failed:", error);
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -44,46 +46,52 @@ function App() {
     return <div className={styles.loader}>Loading...</div>;
   }
 
-return (
-  <Router>
-    <div className={styles.appWrapper}>
-      <Navbar user={user} setUserTo={setUser} />
+  return (
+    <Router>
+      <div className={styles.appWrapper}>
+        <Navbar user={user} setUserTo={setUser} />
 
-      {/* משתמשים בדיב עוטף שיהיה ה"קונטיינר" של ה-Flex */}
-      <div className={styles.mainLayout}>
-        {/* צד שמאל: סיידבר (יופיע רק אם יש יוזר) */}
-        {user != null && (
-          <aside className={styles.sidebarContainer}>
-            <SideBar user={user} />
-          </aside>
-        )}
+        {/* משתמשים בדיב עוטף שיהיה ה"קונטיינר" של ה-Flex */}
+        <div className={styles.mainLayout}>
+          {/* צד שמאל: סיידבר (יופיע רק אם יש יוזר) */}
+          {user != null && (
+            <aside className={styles.sidebarContainer}>
+              <SideBar user={user} />
+            </aside>
+          )}
 
-        {/* צד ימין: התוכן המשתנה של הדפים */}
-        <main className={styles.contentArea}>
-          {/* <CitySelect /> */}
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/register"
-              element={<Register onLoginSuccess={setUser} />}
-            />
-            <Route path="/login" element={<Login onLoginSuccess={setUser} />} />
-            <Route
-              path="/account"
-              element={<Account user={user} onUpdateSuccess={setUser} />}
-            />
-            <Route
-              path="/businessAccount"
-              element={<DetailsOFbusiness user={user} />}
-            />
-            <Route path="/usersmanagment" element={<UsersManagment />} />
-            <Route path="/servicesapprovals" element={<ServicesApprovals />} />
-            <Route path="*" element={<h2>Page Not Found 404</h2>} />
-          </Routes>
-        </main>
+          {/* צד ימין: התוכן המשתנה של הדפים */}
+          <main className={styles.contentArea}>
+            {/* <CitySelect /> */}
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route
+                path="/register"
+                element={<Register onLoginSuccess={setUser} />}
+              />
+              <Route
+                path="/login"
+                element={<Login onLoginSuccess={setUser} />}
+              />
+              <Route
+                path="/account"
+                element={<Account user={user} onUpdateSuccess={setUser} />}
+              />
+              <Route
+                path="/businessAccount"
+                element={<DetailsOFbusiness user={user} />}
+              />
+              <Route path="/usersmanagment" element={<UsersManagment />} />
+              <Route
+                path="/servicesapprovals"
+                element={<ServicesApprovals />}
+              />
+              <Route path="*" element={<h2>Page Not Found 404</h2>} />
+            </Routes>
+          </main>
+        </div>
       </div>
-    </div>
-  </Router>
-);
+    </Router>
+  );
 }
-export default App
+export default App;
