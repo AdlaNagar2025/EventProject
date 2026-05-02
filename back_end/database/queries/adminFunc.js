@@ -68,48 +68,6 @@ WHERE halls.status = ?;`;
   const result = await doQuery(sql, [status, status]);
   return result;
 }
-
-/**
- * עדכון סטטוס האישור של עסק ספציפי.
- * @param {string} type - סוג העסק ('chiefs' או 'halls')
- * @param {number} id - מזהה המשתמש (User ID)
- * @param {string} newStatus - הסטטוס החדש לעדכון
- */
-async function updateBusinessStatus(type, id, newStatus) {
-  const allowedTypes = ["chiefs", "halls"];
-  if (!allowedTypes.includes(type)) {
-    throw new Error("Invalid table name");
-  }
-  if (type === "chiefs") {
-    const sql = `UPDATE chiefs SET status = ?  WHERE chief_id = ?`;
-    return await doQuery(sql, [newStatus, id]);
-  } else {
-    const sql = `UPDATE halls SET status = ? WHERE hall_id = ?`;
-    return await doQuery(sql, [newStatus, id]);
-  }
-}
-/**
- * שליפת פרופיל עסקי מלא לפי מזהה משתמש. 
- * בודק קודם בטבלת שפים, ואם לא נמצא - בטבלת אולמות.
- * @param {number} id - מזהה המשתמש
- */
-
-async function getProfile(id) {
-  console.log(id)
-  // חיפוש בטבלת שפים
-  const sql = `SELECT * FROM chiefs WHERE chief_id=?`;
-  const result = await doQuery(sql, [id]);
-  
-  if (result.length > 0) {
-    return result[0];
-  }
-
-  // אם לא נמצא, חיפוש בטבלת אולמות
-  const sql1 = `SELECT * FROM halls WHERE hall_id=?`;
-  const result1 = await doQuery(sql1, [id]);
-  
-  return result1.length > 0 ? result1[0] : null; 
-}
 /**
  * השבתה או הפעלה של משתמש במערכת (Soft Delete).
  * משנה את שדה is_active בטבלת users.
@@ -121,13 +79,13 @@ async function deactivateUser(status, userId) {
   return await doQuery(sql, [status, userId]);
 }
 
+
+
 module.exports = {
   getAllUsers,
   getUsersByRole,
   getAllChiefsProfile,
   getAllHallsOwnerProfile,
-  getProfile,
-  updateBusinessStatus,
   getAllServices,
   deactivateUser,
   getAllServicesAccordingToStatus,

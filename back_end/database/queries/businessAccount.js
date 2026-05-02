@@ -152,7 +152,34 @@ async function checkStatus(providerId, role) {
   }
 
   const result = await doQuery(sql, [providerId]);
-  return result[0]?.status; // מחזיר רק את הסטטוס עצמו (למשל "PENDING")
+  return result[0]?.status;
 }
 
-module.exports = { createBusinessProfile, checkStatus };
+/**
+ * שולפת מידע תמציתי עבור כרטיס ספק (כולל תמונה ראשית)
+ */
+async function getProviderCardData(providerId, role) {
+  const tableName = role === "Chief" ? "chiefs" : "halls";
+  const idColumn = role === "Chief" ? "chief_id" : "hall_id";
+  const priceColumn = role === "Chief" ? "price_per_hour" : "price";
+
+  const sql = `
+    SELECT 
+      b.*, 
+      b.${priceColumn} AS display_price,
+      i.image_path AS main_image
+    FROM ${tableName} b
+    LEFT JOIN provider_images i ON b.${idColumn} = i.provider_id AND i.is_main = 1
+    WHERE b.${idColumn} = ?`;
+
+  const result = await doQuery(sql, [providerId]);
+  return result && result.length > 0 ? result[0] : null;
+}
+
+module.exports = {
+  createBusinessProfile,
+  checkStatus,
+  getProviderCardData,
+  createBusinessProfile,
+  checkStatus,
+};

@@ -9,13 +9,13 @@ export default function UsersManagment() {
     const fetchUsers = async () => {
       setUsers([]);
       try {
-        let url = "http://localhost:3030/admin/allUsers";
-        if (role === "Chiefs") url = "http://localhost:3030/admin/role/Chief";
-        else if (role === "Halls_Owner")
-          url = "http://localhost:3030/admin/role/Hall_Owner";
-        else if (role === "Customers")
-          url = "http://localhost:3030/admin/role/Customer";
-
+        let url
+        if(role === "All Users")
+          url = "http://localhost:3030/admin/allUsers";
+        else{
+        const rolePath=role.slice(0,role.length-1)
+          url=`http://localhost:3030/admin/role/${rolePath}`}
+       
         const response = await axios.get(url, { withCredentials: true });
         if (response.data.success) {
           setUsers(response.data.data);
@@ -59,13 +59,15 @@ export default function UsersManagment() {
         >
           <option value="All Users">All Users</option>
           <option value="Chiefs">Chiefs</option>
-          <option value="Halls_Owner">Halls Owners</option>
+          <option value="Hall_Owners">Hall Owners</option>
           <option value="Customers">Customers</option>
         </select>
       </div>
       {users.length === 0 ? (
         <p>No users found for this category.</p>
       ) : (
+        <>
+        <p>There are {users.length} {role} </p>
         <table className={classes.customtable}>
           <thead>
             <tr>
@@ -79,35 +81,36 @@ export default function UsersManagment() {
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.first_name}</td>
-                <td>{user.last_name}</td>
-                <td>{user.email}</td>
-                <td>{user.role}</td>
+              <tr key={user?.id}>
+                <td>{user?.first_name}</td>
+                <td>{user?.last_name}</td>
+                <td>{user?.email}</td>
+                <td>{user?.role}</td>
                 <td
                   style={{
-                    color: user.is_active ? "green" : "red",
+                    color: user?.is_active ? "green" : "red",
                     fontWeight: "bold",
                   }}
                 >
-                  {user.is_active === 1 ? "Active" : "Inactive"}
+                  {user?.is_active === 1 ? "Active" : "Inactive"}
                 </td>
                 <td>
                   <button
-                    onClick={() => handleToggleActive(user.id, user.is_active)}
+                    onClick={() => handleToggleActive(user?.id, user?.is_active)}
                     className={
-                      user.is_active
+                      user?.is_active
                         ? classes.deactivateBtn
                         : classes.activateBtn
                     }
                   >
-                    {user.is_active ? "Deactivate" : "Activate"}
+                    {user?.is_active ? "Deactivate" : "Activate"}
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+            </>
       )}
     </div>
   );

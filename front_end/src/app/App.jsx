@@ -17,10 +17,15 @@ import UsersManagment from "../components/admin/UsersManagment";
 import ServicesApprovals from "../components/admin/ServicesApprovals";
 import axios from "axios";
 import CitySelect from "../components/provider/CitySelect";
+import AllServices from "../components/customer/AllServices";
+import FindAVendor from "../components/customer/FindAVendor";
+import BookEvent from "../components/customer/BookEvent";
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  console.log(" i AM IN APPPPPP🙌");
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -33,18 +38,20 @@ function App() {
         } else {
           setUser(null);
         }
+        console.log(user);
       } catch (error) {
         setUser(null);
+        console.log("Auth check failed:", error);
       } finally {
         setLoading(false);
       }
     };
     checkAuth();
-  }, []);
+  }, [user != null]);
 
-  if (loading) {
-    return <div className={styles.loader}>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div className={styles.loader}>Loading...</div>;
+  // }
 
   return (
     <Router>

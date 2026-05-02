@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import classes from "./BusinessAccount.module.css";
 import FormInput from "../BasicToProviderProfile/FormInput";
+import ImageUpload from "../BasicToProviderProfile/ImagesCode/ImageUpload"; // וודאי שהנתיב הזה נכון אצלך
 
-// ערכים ראשוניים ל-State
 const initialChief = {
   specialty: "",
   phone: "",
@@ -39,12 +39,7 @@ const CHIEF_FIELDS = [
     type: "number",
     required: true,
   },
-  {
-    label: "Start_Year",
-    name: "start_year",
-    type: "number",
-    required: false,
-  },
+  { label: "Start Year", name: "start_year", type: "number", required: false },
   { label: "Max Capacity", name: "capacity", type: "number", required: true },
   {
     label: "Phone",
@@ -78,7 +73,6 @@ export default function BusinessAccount({ user, isDisable }) {
   const [chiefData, setChiefData] = useState(initialChief);
   const [hallData, setHallData] = useState(initialHall);
 
-  // זיהוי תפקיד ובחירת המידע והשדות המתאימים
   const isChief = user?.role === "Chief";
   const data = isChief ? chiefData : hallData;
   const relevantFields = isChief ? CHIEF_FIELDS : HALL_FIELDS;
@@ -93,7 +87,9 @@ export default function BusinessAccount({ user, isDisable }) {
     try {
       const response = await axios.get(
         "http://localhost:3030/provider/MyProfile",
-        { withCredentials: true },
+        {
+          withCredentials: true,
+        },
       );
       if (response.data.success && response.data.data) {
         if (isChief) setChiefData(response.data.data);
@@ -110,10 +106,29 @@ export default function BusinessAccount({ user, isDisable }) {
 
   const submitProfile = async (e) => {
     e.preventDefault();
-    if (data.description.length < 20)
+
+    // בדיקות ולידציה
+    if (data.description.length < 20) {
       return alert("Description too short (min 20 chars).");
-    if (data.start_year && data.start_year > new Date().getFullYear())
-      return alert("Year Can not be in future.");
+    }
+    if (
+      isChief &&
+      data.start_year &&
+      data.start_year > new Date().getFullYear()
+    ) {
+      return alert("Year cannot be in the future.");
+    }
+
+    // בדיקת ערכים חיוביים
+    if (isChief) {
+      if (data.price_per_hour <= 0 || data.capacity <= 0) {
+        return alert("Please enter valid positive values.");
+      }
+    } else {
+      if (data.price <= 0 || data.capacity <= 0) {
+        return alert("Please enter valid positive values.");
+      }
+    }
 
     setIsSubmitting(true);
     try {
@@ -127,52 +142,53 @@ export default function BusinessAccount({ user, isDisable }) {
         fetchProfile();
       }
     } catch (error) {
+      console.error("Save error:", error);
       alert("Failed to save details.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (!user) return <p>Loading...</p>;
+  if (!user) return <div className={classes.loader}>Loading...</div>;
 
   const hasExistingData = isChief
-    ? chiefData.specialty !== ""
-    : hallData.hall_name !== "";
+    ? !!chiefData.specialty
+    : !!hallData.hall_name;
 
   return (
     <div className={classes.container}>
       <h2>Business Profile Setup</h2>
-      <p>Hello {user?.first_name}, please update your business details</p>
+      <p>Hello {user.first_name}, please update your business details</p>
+
+      {/* העלאת תמונות - החלק שמוזג מה-Main */}
+      <section className={classes.imageSection}>
+        <ImageUpload user={user} />
+      </section>
 
       <form className={classes.form} onSubmit={submitProfile}>
         <div className={classes.gridSection}>
           <h3>{isChief ? "Chief Details" : "Hall Details"}</h3>
-
-          {/* רינדור דינמי של השדות לפי המערך */}
           {relevantFields.map((field) => (
             <FormInput
               key={field.name}
-              {...field} // מעביר label, name, type, required, placeholder, extraProps
-              value={data[field.name]}
+              {...field}
+              value={data[field.name] || ""}
               onChange={handleChange}
               disabled={isDisable}
             />
           ))}
         </div>
 
-        <div className={classes.fullWidth}>
-          <label className={classes.label}>
-            Description (Min 20 characters)
-          </label>
-          <textarea
-            name="description"
-            className={classes.textarea}
-            value={data.description}
-            onChange={handleChange}
-            disabled={isDisable}
-            required
-          />
-        </div>
+        <textarea
+          placeholder="Detailed description of your services..."
+          name="description"
+          className={classes.textarea}
+          value={data.description || ""}
+          onChange={handleChange}
+          minLength={20}
+          required
+          disabled={isDisable}
+        />
 
         <button
           type="submit"

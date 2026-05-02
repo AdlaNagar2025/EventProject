@@ -47,12 +47,12 @@ export default function Register({ onLoginSuccess }) {
 
       if (response.data.success) {
         onLoginSuccess(response.data.user);
-        if (response.data.user.role === "Customer" || response.data.user.role==="Admin") {
+        if (response.data.user?.role === "Customer" || response.data.user?.role==="Admin") {
           // עדכון המצב הגלובלי באפליקציה
           navigate("/account");
         } else if (
-          response.data.user.role === "Chief" ||
-          response.data.user.role === "Hall_Owner"
+          response.data.user?.role === "Chief" ||
+          response.data.user?.role === "Hall_Owner"
         ) {
           navigate("/businessAccount");
         }
@@ -136,14 +136,7 @@ export default function Register({ onLoginSuccess }) {
               checked={formData.role === "Chief"}
             />
             Chief
-            <input
-              type="radio"
-              name="role"
-              value="Admin"
-              onChange={handleInputChange}
-              checked={formData.role === "Admin"}
-            />
-            Admin
+          
           </div>
         </section>
         <button type="submit" className={classes.submitBtn}>
