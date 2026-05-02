@@ -6,10 +6,7 @@ const { getCalandar } = require("../database/queries/calendar");
 const {
   getAllServicesAccordingToStatus,
 } = require("../database/queries/adminFunc");
-const {
-  getResultSearching,
-  getEventData,
-} = require("../database/queries/customerFunc");
+const { getResultSearching } = require("../database/queries/customerFunc");
 const { getProviderCardData } = require("../database/queries/businessAccount");
 const router = express.Router();
 /**
@@ -90,11 +87,6 @@ router.get("/CardData/:id", async (req, res) => {
     console.error("Error fetching Main Foto:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
-});
-
-router.post("/eventData", async (req, res) => {
-  const result = await getEventData(req.body);
-  return result;
 });
 
 module.exports = router;
