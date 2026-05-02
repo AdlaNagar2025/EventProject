@@ -2,7 +2,7 @@ import classes from "./BusinessProfile.module.css";
 import React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import ImageUpload from "../BasicToProviderProfile/ImagesCode/ImageUpload";
+import ImageUpload from "../BasicToProviderProfile/ImageUpload";
 import Calendar from "../BasicToProviderProfile/Calendar";
 
 export default function BusinessProfile({ user, provider }) {
