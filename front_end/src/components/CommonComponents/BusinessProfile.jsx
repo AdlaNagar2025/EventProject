@@ -1,42 +1,42 @@
-import classes from "./BusinessProfile.module.css";
-import React from "react";
-import axios from "axios";
-import { useState, useEffect } from "react";
-import ImageUpload from "../BasicToProviderProfile/ImagesCode/ImageUpload";
-import Calendar from "../BasicToProviderProfile/Calendar";
+import classes from "./BusinessProfile.module.css"; 
+import React from 'react'
+import axios from 'axios'
+import { useState , useEffect } from 'react'
+import ImageUpload from '../Basic/ImageUpload';
+import Calendar from '../Basic/Calendar';
 
-export default function BusinessProfile({ user, provider }) {
-  console.log(provider);
-  const [data, setData] = useState(null);
+
+export default function BusinessProfile({user,provider}) {
+  const [data,setData]=useState(null)
   const [loading, setLoading] = useState(true);
-
+ 
   useEffect(() => {
     const fetchProfile = async () => {
-      console.log("I AM IN BUSINESSPROFILE LINE 15" + user?.role);
+      console.log("I AM IN BUSINESSPROFILE" + user.role)
       try {
-        const rolePath = user.role.toLowerCase();
-        const url = `http://localhost:3030/${rolePath}/Profile/${provider.id}`;
+        const rolePath=user.role.toLowerCase();
+        const url=`http://localhost:3030/${rolePath}/Profile/${provider.id}`
 
-        const response = await axios.get(url, { withCredentials: true });
-        setData(response.data.data);
-        console.log("I am in BusinessProfile Componenta " + response.data.data);
+        const response = await axios.get( url,{ withCredentials: true, }, );
+        setData(response.data.data)
+        console.log("I am in BusinessProfile Componenta " +response.data.data);
+        
       } catch (error) {
         console.error("Error fetching profile:", error);
-      } finally {
+      }
+      finally {
         setLoading(false);
       }
     };
-    if (user) fetchProfile();
-  }, [provider.id, user?.role]);
+    fetchProfile();
+  }, [provider.id , user.role]);
   if (loading) return <div className={classes.loader}>Loading Profile...</div>;
   if (!data) return <div>No data found for this business.</div>;
   return (
     <div className={classes.container}>
       <header className={classes.header}>
         <h2>{data.hall_name || provider.first_name}</h2>
-        <span className={classes.badge}>
-          {provider.provider_type.replace("_", " ")}
-        </span>
+        <span className={classes.badge}>{provider.provider_type.replace('_', ' ')}</span>
       </header>
 
       <div className={classes.detailsGrid}>
@@ -54,20 +54,12 @@ export default function BusinessProfile({ user, provider }) {
         {/* פרטים ספציפיים לפי סוג */}
         {provider.provider_type === "Chief" ? (
           <>
-            <div className={classes.infoItem}>
-              <strong>Specialty:</strong> {data.specialty}
-            </div>
-            <div className={classes.infoItem}>
-              <strong>Experience:</strong> {data.experience_years} years
-            </div>
-            <div className={classes.infoItem}>
-              <strong>Hourly Rate:</strong> ₪{data.price_per_hour}
-            </div>
+            <div className={classes.infoItem}><strong>Specialty:</strong> {data.specialty}</div>
+            <div className={classes.infoItem}><strong>Experience:</strong> {data.experience_years} years</div>
+            <div className={classes.infoItem}><strong>Hourly Rate:</strong> ₪{data.price_per_hour}</div>
           </>
         ) : (
-          <div className={classes.infoItem}>
-            <strong>Price:</strong> ₪{data.price}
-          </div>
+          <div className={classes.infoItem}><strong>Price:</strong> ₪{data.price}</div>
         )}
       </div>
 
@@ -79,11 +71,11 @@ export default function BusinessProfile({ user, provider }) {
       <hr className={classes.divider} />
 
       <section className={classes.mediaSection}>
-        <ImageUpload role={user?.role} user={provider} />
+        <ImageUpload role={user.role} user={provider} />
       </section>
 
       <section className={classes.calendarSection}>
-        <Calendar role={user?.role} user={provider} />
+        <Calendar role={user.role} user={provider} />
       </section>
     </div>
   );

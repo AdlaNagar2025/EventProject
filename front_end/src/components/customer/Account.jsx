@@ -17,10 +17,10 @@ export default function Account({ user, onUpdateSuccess }) {
   useEffect(() => {
     if (user) {
       setFormData({
-        first_name: user?.first_name,
-        last_name: user?.last_name,
-        email: user?.email,
-        phone: user?.phone,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        phone: user.phone,
       });
     }
   }, [user]);
@@ -60,7 +60,7 @@ export default function Account({ user, onUpdateSuccess }) {
   return (
     <div className={classes.accountContainer}>
       <div>
-        <p>Welcome Back {user?.first_name}! Update your account information:</p>
+        <p>Welcome Back {user.first_name}! Update your account information:</p>
 
         <form className={classes.form} onSubmit={handleProfileUpdate}>
           <h2>Update Form:</h2>
