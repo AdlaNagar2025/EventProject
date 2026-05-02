@@ -1,28 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState , useEffect } from "react";
 import BusinessAccount from "../BasicToProviderProfile/BusinessAccount";
-import ImageUpload from "../BasicToProviderProfile/ImagesCode/ImageUpload";
+import ImageUpload from "../BasicToProviderProfile/ImageUpload";
 import Calendar from "../BasicToProviderProfile/Calendar";
 import classes from "./DetailsOFbusiness.module.css";
-import { FaTimes } from "react-icons/fa";
 import axios from "axios";
 
 function DetailsOFbusiness({ user }) {
   const [isDisable, setIsDisable] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("");
-  const [check, setCheck] = useState(false);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const getStatus = async () => {
       try {
         const response = await axios.get(
           "http://localhost:3030/provider/MyBusinessStatus",
-          { withCredentials: true },
+          { withCredentials: true }
         );
-
+        
         if (response.data.success) {
           const status = response.data.status;
           setCurrentStatus(status);
+          // אם הסטטוס הוא PENDING או APPROVED - ננעל את האפשרות לערוך/לשלוח שוב
           if (status === "PENDING") {
             setIsDisable(true);
           }
@@ -34,42 +32,34 @@ function DetailsOFbusiness({ user }) {
     getStatus();
   }, []);
 
-  console.log(user);
-  async function handleStatusChange() {
+console.log(user)
+async function handleStatusChange() {
     try {
-      if (!check) {
-        setError("You must upload at least one image before submitting.");
-        return;
-      }
-
-      setError("");
-
-      const tableName = user?.role === "Chief" ? "chiefs" : "halls";
-      const id = user?.id;
-      const newStatus = "PENDING";
+      const tableName = user?.role=== "Chief" ? "chiefs" : "halls";
+      const id=user?.id
+      const newStatus="PENDING"
       const response = await axios.post(
         "http://localhost:3030/provider/approve-business",
         { type: tableName, id, newStatus },
         { withCredentials: true },
       );
-
+      // if (response.data.success) {
+      //  //TGEEER STATUS IN TABLE DISABLE
+      // }
       alert(response.data.message);
-      setIsDisable(true);
+      setIsDisable(true)
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   }
   return (
-    <div
-      className={`${classes.mainContainer} ${isDisable ? classes.disabledArea : ""}`}
-    >
+    <div className={`${classes.mainContainer} ${isDisable ? classes.disabledArea : ""}`}>
       <header className={classes.header}>
         <h1>Business Setup</h1>
-        <p>
-          Status: <strong>{currentStatus || "NOT SUBMITTED"}</strong>
-        </p>
+        <p>Status: <strong>{currentStatus || "NOT SUBMITTED"}</strong></p>
       </header>
 
+      {/* העברת isDisable לקומפוננטות הילד כדי שגם הן יינעלו */}
       <section className={classes.stepCard}>
         <div className={classes.stepNumber}>1</div>
         <BusinessAccount user={user} isDisable={isDisable} />
@@ -79,12 +69,7 @@ function DetailsOFbusiness({ user }) {
 
       <section className={classes.stepCard}>
         <div className={classes.stepNumber}>2</div>
-        <ImageUpload
-          role={user?.role}
-          user={user}
-          ok={(val) => setCheck(val)}
-          isDisable={isDisable}
-        />
+        <ImageUpload role={user?.role} user={user} isDisable={isDisable} />
       </section>
 
       <div className={classes.divider} />
@@ -94,22 +79,13 @@ function DetailsOFbusiness({ user }) {
         <Calendar role={user?.role} user={user} isDisable={isDisable} />
       </section>
 
-      <button
-        onClick={handleStatusChange}
+      <button 
+        onClick={handleStatusChange} 
         disabled={isDisable} // תיקון: disabled ולא disable
         className={classes.submitBtn}
       >
         {isDisable ? "Waiting for Approval..." : "Submit To Admin"}
       </button>
-
-      {error && (
-        <div className={classes.errorMessage}>
-          <span>{error}</span>
-          <button onClick={() => setError("")} className={classes.closeError}>
-            <FaTimes />
-          </button>
-        </div>
-      )}
     </div>
   );
 }
