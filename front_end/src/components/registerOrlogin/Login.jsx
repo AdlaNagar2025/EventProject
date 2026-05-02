@@ -31,16 +31,16 @@ export default function Login({ onLoginSuccess }) {
       );
       if (response.data.success) {
         onLoginSuccess(response.data.user);
-        if (response.data.user?.role === "Customer") {
+        if (response.data.user.role === "Customer") {
           navigate("/account");
         } else if (
-          response.data.user?.role === "Chief" ||
-          response.data.user?.role === "Hall_Owner"
+          response.data.user.role === "Chief" ||
+          response.data.user.role === "Hall_Owner"
         ) {
           navigate("/businessAccount");
         }
         else if(
-          response.data.user?.role === "Admin"
+          response.data.user.role === "Admin"
         )
          navigate("/account");
       } else {

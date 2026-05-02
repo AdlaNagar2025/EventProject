@@ -5,11 +5,11 @@ export default function SideBar({ user }) {
   
   return (
     <>
-      {user?.role === "Customer" && (
+      {user.role === "Customer" && (
         <div className={classes.sideBar}>
-          <Link to="/findavendor">🔍Find a vendor</Link>
-          {/* <Link to="/allApprovedServices">Vendors</Link> */}
-          <Link to="/bookEvent">BooK Event Team </Link>
+          <p>DashBoard</p>
+          <p>🔍Find a vendor</p>
+          <Link to="/allApprovedServices">Vendors</Link>
           {/* <Link to="/servicesapprovals">Services Approvals</Link> */}
           <p>My Booking</p>
           <p>❤️favorite</p>
@@ -17,7 +17,7 @@ export default function SideBar({ user }) {
           <p>✏️Write a review</p>
         </div>
       )}
-      {user?.role === "Admin" && (
+      {user.role === "Admin" && (
         <div className={classes.sideBar}>
           <p>Admin DashBoard</p>
           <Link to="/usersmanagment">Users Managment</Link>
@@ -27,7 +27,7 @@ export default function SideBar({ user }) {
         </div>
       )}
 
-      {(user?.role === "Chief" || user?.role === "Hall_Owner") && (
+      {(user.role === "Chief" || user.role === "Hall_Owner") && (
         <div className={classes.sideBar}>
           <p>DashBoard</p>
           <p>Calender && Bookings</p>
