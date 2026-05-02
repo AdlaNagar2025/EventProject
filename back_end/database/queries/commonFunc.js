@@ -1,35 +1,36 @@
-
-
 const doQuery = require("../query");
-const {getRole} =require("../queries/helpingFunc")
+const { getRole } = require("../queries/helpingFunc");
 
 /**
- * שליפת פרופיל עסקי מלא לפי מזהה משתמש. 
+ * שליפת פרופיל עסקי מלא לפי מזהה משתמש.
  * בודק קודם בטבלת שפים, ואם לא נמצא - בטבלת אולמות.
  * @param {number} id - מזהה המשתמש
  */
 
 async function getProfile(id) {
-  const role = await getRole(id); 
-  
+  const role = await getRole(id);
+
   console.log("The role is: " + role);
 
   let sql;
-  let result; 
+  let result;
 
   if (role === "Chief") {
     sql = `SELECT * FROM chiefs WHERE chief_id = ?`;
     result = await doQuery(sql, [id]);
-  } 
-  else if (role === "Hall_Owner") { 
+  } else if (role === "Hall_Owner") {
     sql = `SELECT * FROM halls WHERE hall_id = ?`;
     result = await doQuery(sql, [id]);
   }
 
-  return (result && result.length > 0) ? result[0] : null; 
+  return result && result.length > 0 ? result[0] : null;
 }
+async function getMainFoto(id) {
+  const sql = `SELECT * FROM provider_images WHERE is_main=1 AND provider_id=?;`;
+  const result = doQuery(sql, [id]);
 
-
+  return result;
+}
 
 /**
  * עדכון סטטוס האישור של עסק ספציפי.
@@ -51,5 +52,4 @@ async function updateBusinessStatus(type, id, newStatus) {
   }
 }
 
-
-module.exports={updateBusinessStatus,getProfile}
+module.exports = { updateBusinessStatus, getProfile, getMainFoto };

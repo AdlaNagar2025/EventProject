@@ -11,6 +11,7 @@ router.post("/register", async (req, res) => {
   try {
     const result = await register(req.body);
     req.session.user = result.user;
+    console.log(req.session);
     return res.json(result);
   } catch (error) {
     console.error("DEBUG ERROR:", error);
@@ -65,7 +66,7 @@ router.get("/logout", (req, res) => {
   if (req.session.user) {
     req.session.destroy((err) => {
       if (err) return res.json({ success: false, message: "Logout failed" });
-      res.clearCookie("connect.sid"); 
+      res.clearCookie("connect.sid");
       return res.json({ success: true, message: "Logged out successfully" });
     });
   } else {
@@ -73,7 +74,7 @@ router.get("/logout", (req, res) => {
   }
 });
 
-router.get("/checkSession", isConnected, (req, res) => {
+router.get("/checkSession", (req, res) => {
   return res.json({ success: true, user: req.session.user });
 });
 

@@ -9,7 +9,8 @@ const dbConfig = {
   user: "root",
   password: "",
   database: "eventhub",
-  dateStrings:true
+  dateStrings:true,
+  multipleStatements: true
 };
 
 let connection;
